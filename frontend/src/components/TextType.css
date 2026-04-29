@@ -1,0 +1,33 @@
+.text-type {
+  display: block;
+  white-space: pre-wrap;
+}
+
+.hero-subtitle .text-type__content {
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+}
+
+.hero-subtitle {
+  margin-bottom: 0;
+}
+
+.hero-subtitle .text-type__content {
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.text-type__cursor {
+  margin-left: 0.25rem;
+  display: inline-block;
+  opacity: 1;
+}
+
+.text-type__cursor--hidden {
+  display: none;
+}

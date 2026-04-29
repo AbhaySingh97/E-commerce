@@ -1,0 +1,23 @@
+import mongoose from 'mongoose';
+
+const cartItemSchema = new mongoose.Schema({
+  product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+  name: { type: String, required: true },
+  image: { type: String },
+  price: { type: Number, required: true },
+  quantity: { type: Number, required: true, min: 1 }
+});
+
+const cartSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  sessionId: { type: String },
+  items: { type: [cartItemSchema], default: [] },
+  coupon: { type: mongoose.Schema.Types.ObjectId, ref: 'Coupon' },
+  totalAmount: { type: Number, default: 0 },
+  discountAmount: { type: Number, default: 0 },
+  taxAmount: { type: Number, default: 0 },
+  shippingAmount: { type: Number, default: 0 },
+  grandTotal: { type: Number, default: 0 }
+}, { timestamps: true });
+
+export const Cart = mongoose.model('Cart', cartSchema);
