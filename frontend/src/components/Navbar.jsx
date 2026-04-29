@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { FiSearch } from 'react-icons/fi';
@@ -9,6 +9,8 @@ export const Navbar = () => {
   const { user, logout } = useAuth();
   const { cart } = useCart();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
   const [searchQuery, setSearchQuery] = React.useState('');
   const [showSuggestions, setShowSuggestions] = React.useState(false);
 
@@ -38,48 +40,66 @@ export const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="nav-container">
-        <form className="nav-search-bar" onSubmit={handleSearch}>
-          <FiSearch className="search-icon" />
-          <input
-            type="text"
-            placeholder="Search products..."
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setShowSuggestions(true);
-            }}
-            onFocus={() => setShowSuggestions(true)}
-            onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-          />
-          {showSuggestions && suggestions.length > 0 && (
-            <div className="search-suggestions">
-              {suggestions.map(p => (
-                <div
-                  key={p._id}
-                  className="search-suggestion"
-                  onClick={() => handleSuggestionClick(p.slug)}
-                >
-                  <img src={p.images[0]} alt={p.name} />
-                  <span>{p.name}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </form>
+        {isHomePage && (
+          <form className="nav-search-bar" onSubmit={handleSearch}>
+            <FiSearch className="search-icon" />
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setShowSuggestions(true);
+              }}
+              onFocus={() => setShowSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+            />
+            {showSuggestions && suggestions.length > 0 && (
+              <div className="search-suggestions">
+                {suggestions.map(p => (
+                  <div
+                    key={p._id}
+                    className="search-suggestion"
+                    onClick={() => handleSuggestionClick(p.slug)}
+                  >
+                    <img src={p.images[0]} alt={p.name} />
+                    <span>{p.name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </form>
+        )}
 
         <div className="nav-links">
-          {user ? (
-            <>
-              {user.role === 'admin' && (
-                <Link to="/admin" className="nav-link admin-link">Admin</Link>
-              )}
-              <Link to="/cart" className="cart-link">
-                Cart <span className="cart-count">{cartItemCount}</span>
-              </Link>
-              <button onClick={logout} className="logout-btn">Logout</button>
-            </>
+          {isHomePage ? (
+            user ? (
+              <>
+                {user.role === 'admin' && (
+                  <Link to="/admin" className="nav-link admin-link">Admin</Link>
+                )}
+                <Link to="/cart" className="cart-link">
+                  Cart <span className="cart-count">{cartItemCount}</span>
+                </Link>
+                <button onClick={logout} className="logout-btn">Logout</button>
+              </>
+            ) : (
+              <Link to="/login" className="login-btn">Login</Link>
+            )
           ) : (
-            <Link to="/login" className="login-btn">Login</Link>
+            <>
+              {user && (
+                <>
+                  {user.role === 'admin' && (
+                    <Link to="/admin" className="nav-link admin-link">Admin</Link>
+                  )}
+                  <Link to="/cart" className="cart-link">
+                    Cart <span className="cart-count">{cartItemCount}</span>
+                  </Link>
+                  <button onClick={logout} className="logout-btn">Logout</button>
+                </>
+              )}
+            </>
           )}
         </div>
       </div>

@@ -102,7 +102,7 @@ export const addToCart = async (req, res) => {
       cart.items.push({
         product: productId,
         name: product.name,
-        image: product.images[0] || '',
+        image: product.images?.[0] || '',
         price: product.price,
         quantity
       });
@@ -111,7 +111,8 @@ export const addToCart = async (req, res) => {
     await cart.save();
     res.status(201).json(cart);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to add to cart' });
+    console.error('Add to cart error:', error);
+    res.status(500).json({ error: 'Failed to add to cart', details: error.message });
   }
 };
 
