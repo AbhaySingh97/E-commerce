@@ -308,21 +308,30 @@
 .category-card.refined {
   position: relative;
   display: grid;
-  gap: 1rem;
+  gap: 0;
   text-decoration: none;
   color: inherit;
-  min-height: 320px;
+  min-height: 0;
   overflow: hidden;
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.category-card.refined .category-image {
+  position: relative;
+  width: 100%;
+  height: clamp(260px, 30vw, 360px);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.04);
+}
+
 .category-card.refined img,
 .category-card.refined .placeholder-img {
   width: 100%;
-  height: 220px;
+  height: 100%;
   object-fit: cover;
+  object-position: center;
 }
 
 .placeholder-img {
@@ -334,7 +343,7 @@
 }
 
 .category-card-copy {
-  padding: 0 1.2rem 1.2rem;
+  padding: 1.2rem;
 }
 
 .category-card-copy span {
@@ -440,6 +449,10 @@
 
   .page-hero h1 {
     font-size: clamp(2rem, 11vw, 3.2rem);
+  }
+
+  .category-card.refined .category-image {
+    height: clamp(220px, 52vw, 300px);
   }
 
   .section-heading {

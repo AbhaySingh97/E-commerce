@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import SectionHeader from '../ui/SectionHeader';
+import { getCategoryDescription, getCategoryImage, handleCategoryImageError } from '../../lib/categoryVisuals';
 
 const fallbackCategories = [
   {
@@ -50,11 +51,11 @@ const CategorySpotlight = ({ categories = [] }) => {
             transition={{ delay: index * 0.08 }}
           >
             <Link to={`/products?category=${category.slug}`} className="category-spotlight-card">
-              <img src={category.image || fallbackCategories[index % fallbackCategories.length].image} alt={category.name} />
+              <img src={getCategoryImage(category, index)} alt={category.name} onError={(event) => handleCategoryImageError(event, index)} />
               <div className="category-spotlight-content">
                 <span>0{index + 1}</span>
                 <h3>{category.name}</h3>
-                <p>{category.description || 'Explore premium products selected for quality and style.'}</p>
+                <p>{getCategoryDescription(category, index)}</p>
               </div>
             </Link>
           </motion.div>

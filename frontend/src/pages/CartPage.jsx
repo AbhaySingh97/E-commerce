@@ -6,6 +6,8 @@ import { useCart } from '../context/CartContext';
 import { trackEvent } from '../lib/analytics';
 import { formatCurrency } from '../lib/formatters';
 
+const fallbackImage = 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=200&q=80';
+
 const CartPage = () => {
   const { cart, updateQuantity, removeItem, applyCoupon, removeCoupon } = useCart();
   const [coupon, setCoupon] = useState('');
@@ -63,8 +65,12 @@ const CartPage = () => {
             <article key={item._id} className="cart-item">
               <div className="cart-item-image">
                 <img
-                  src={item.product?.images?.[0] || item.image || 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=200&q=80'}
+                  src={item.product?.images?.[0] || item.image || fallbackImage}
                   alt={item.name}
+                  onError={(event) => {
+                    event.currentTarget.onerror = null;
+                    event.currentTarget.src = fallbackImage;
+                  }}
                 />
               </div>
               <div className="cart-item-info">

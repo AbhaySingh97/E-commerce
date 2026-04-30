@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { ErrorState, PageLoader } from '../components/common/PageState';
+import { getCategoryDescription, getCategoryImage, handleCategoryImageError } from '../lib/categoryVisuals';
 import { productAPI } from '../services/api';
 
 const CategoriesPage = () => {
@@ -39,16 +40,12 @@ const CategoriesPage = () => {
         {categories.map((category, index) => (
           <Link key={category._id} to={`/products?category=${category.slug}`} className="category-card refined">
             <div className="category-image">
-              {category.image ? (
-                <img src={category.image} alt={category.name} />
-              ) : (
-                <div className="placeholder-img">{String(index + 1).padStart(2, '0')}</div>
-              )}
+              <img src={getCategoryImage(category, index)} alt={category.name} onError={(event) => handleCategoryImageError(event, index)} />
             </div>
             <div className="category-card-copy">
               <span>{String(index + 1).padStart(2, '0')}</span>
               <h3>{category.name}</h3>
-              <p>{category.description || 'Explore premium products selected for this department.'}</p>
+              <p>{getCategoryDescription(category, index)}</p>
             </div>
           </Link>
         ))}

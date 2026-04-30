@@ -10,6 +10,101 @@ const parentCategories = [
   'Electronics', 'Fashion', 'Home & Garden', 'Sports & Outdoors'
 ];
 
+const categoryVisuals = {
+  electronics: {
+    image: 'https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&q=85&w=900',
+    description: 'Devices, tools, and connected upgrades built for modern daily use.'
+  },
+  fashion: {
+    image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&q=85&w=900',
+    description: 'Tailored edits, statement pieces, and wardrobe essentials with a premium finish.'
+  },
+  'home-garden': {
+    image: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&q=85&w=900',
+    description: 'Furniture, decor, and practical pieces that sharpen the feel of a space.'
+  },
+  'sports-outdoors': {
+    image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=85&w=900',
+    description: 'Performance gear and active essentials for training, movement, and recovery.'
+  },
+  smartphones: {
+    image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=85&w=900',
+    description: 'Flagship phones and mobile essentials selected for speed, camera, and design.'
+  },
+  laptops: {
+    image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=85&w=900',
+    description: 'Portable performance machines for work, creation, and entertainment.'
+  },
+  audio: {
+    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=85&w=900',
+    description: 'Headphones, speakers, and listening gear engineered for richer sound.'
+  },
+  shoes: {
+    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=85&w=900',
+    description: 'Statement footwear spanning everyday comfort, premium form, and athletic edge.'
+  },
+  bags: {
+    image: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&q=85&w=900',
+    description: 'Carry pieces designed for polish, storage, and everyday durability.'
+  },
+  wearables: {
+    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=85&w=900',
+    description: 'Smart watches and connected accessories that keep performance close at hand.'
+  },
+  kitchen: {
+    image: 'https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&q=85&w=900',
+    description: 'Cookware and countertop tools chosen to make the kitchen work harder and look better.'
+  },
+  beauty: {
+    image: 'https://images.unsplash.com/photo-1522338242992-e1a54906a8da?auto=format&fit=crop&q=85&w=900',
+    description: 'Skincare, fragrance, and beauty staples curated around quality formulas.'
+  },
+  lighting: {
+    image: 'https://images.unsplash.com/photo-1534073828943-f43b351717b3?auto=format&fit=crop&q=85&w=900',
+    description: 'Lamps and lighting accents that define mood, warmth, and visual balance.'
+  },
+  cameras: {
+    image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=85&w=900',
+    description: 'Imaging gear for creators who need dependable detail and control.'
+  },
+  accessories: {
+    image: 'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&q=85&w=900',
+    description: 'Refined add-ons that complete daily carry, style, and utility.'
+  },
+  eyewear: {
+    image: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&q=85&w=900',
+    description: 'Frames and sunglasses that balance comfort, protection, and character.'
+  },
+  'smart-home': {
+    image: 'https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&q=85&w=900',
+    description: 'Connected home devices built to automate comfort, control, and ambience.'
+  },
+  fitness: {
+    image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=85&w=900',
+    description: 'Training gear and recovery pieces selected for consistent performance.'
+  },
+  'personal-care': {
+    image: 'https://images.unsplash.com/photo-1609840114035-3c981b782dfe?auto=format&fit=crop&q=85&w=900',
+    description: 'Daily care essentials that combine design, hygiene, and practical comfort.'
+  },
+  decor: {
+    image: 'https://images.unsplash.com/photo-1563851010515-2fe9842e6a73?auto=format&fit=crop&q=85&w=900',
+    description: 'Decor objects that add texture, shape, and character without clutter.'
+  },
+  'home-fragrance': {
+    image: 'https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&q=85&w=900',
+    description: 'Candles and scent-driven accents crafted to shape atmosphere with restraint.'
+  },
+  travel: {
+    image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&q=85&w=900',
+    description: 'Luggage and travel gear designed for cleaner movement and better packing.'
+  }
+};
+
+const normalizeCategoryKey = (value = '') => value.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
+const getCategoryVisual = (value) => categoryVisuals[normalizeCategoryKey(value)] || {};
+
 const templates = [
   { name: 'Apple iPhone 15 Pro', sub: 'Smartphones', parent: 'Electronics', img: '1511707171634-5f897ff02aa9', price: 129900 },
   { name: 'MacBook Air M3', sub: 'Laptops', parent: 'Electronics', img: '1517336714731-48b2504644a6', price: 114900 },
@@ -19,7 +114,7 @@ const templates = [
   { name: 'Apple Watch Ultra 2', sub: 'Wearables', parent: 'Electronics', img: '1523275335684-37898b6baf30', price: 89900 },
   { name: 'Stovetop Coffee Maker', sub: 'Kitchen', parent: 'Home & Garden', img: '1583847268964-b28dc2f51ac9', price: 4999 },
   { name: 'Chanel No. 5 Perfume', sub: 'Beauty', parent: 'Fashion', img: '1594035910387-fea47794261f', price: 14500 },
-  { name: 'Artemide Tolomeo Lamp', sub: 'Lighting', parent: 'Home & Garden', img: '1534073828943-f43b351717b3', price: 24900 },
+  { name: 'Artemide Tolomeo Lamp', sub: 'Lighting', parent: 'Home & Garden', img: '1513506003901-1e6a229e2d15', price: 24900 },
   { name: 'Canon EOS R5 DSLR', sub: 'Cameras', parent: 'Electronics', img: '1516035069371-29a1b244cc32', price: 339995 },
   { name: 'Keychron Q1 Keyboard', sub: 'Accessories', parent: 'Electronics', img: '1511467687858-23d96c32e4ae', price: 15999 },
   { name: 'Ray-Ban Wayfarer Classic', sub: 'Eyewear', parent: 'Fashion', img: '1572635196237-14b3f281503f', price: 10990 },
@@ -43,19 +138,32 @@ async function seedDatabase() {
     console.log('🧹 Cleared data');
 
     const catMap = {};
-    for (const parent of parentCategories) {
-      const p = await Category.create({ name: parent, slug: parent.toLowerCase().replace(/ /g, '-'), isActive: true });
+    for (const [index, parent] of parentCategories.entries()) {
+      const slug = parent.toLowerCase().replace(/ /g, '-');
+      const visual = getCategoryVisual(parent);
+      const p = await Category.create({
+        name: parent,
+        slug,
+        description: visual.description,
+        image: visual.image,
+        isActive: true,
+        order: index + 1
+      });
       catMap[parent] = p;
     }
 
     const subMap = {};
-    for (const t of templates) {
+    for (const [index, t] of templates.entries()) {
       if (!subMap[t.sub]) {
+        const visual = getCategoryVisual(t.sub);
         subMap[t.sub] = await Category.create({
           name: t.sub,
           slug: t.sub.toLowerCase().replace(/ /g, '-'),
-          parent: catMap[t.parent]._id,
-          isActive: true
+          description: visual.description,
+          image: visual.image,
+          parentCategory: catMap[t.parent]._id,
+          isActive: true,
+          order: index + 1
         });
       }
     }
