@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import * as analyticsController from '../controllers/analyticsController.js';
-import { auth } from '../middleware/auth.js';
+import { auth, adminOnly } from '../middleware/auth.js';
 
 const router = Router();
 
-router.get('/sales', auth, analyticsController.getSalesAnalytics);
-router.get('/top-products', auth, analyticsController.getTopProducts);
-router.get('/dashboard', auth, analyticsController.getDashboardStats);
+router.get('/sales', auth, adminOnly, analyticsController.getSalesAnalytics);
+router.get('/top-products', auth, adminOnly, analyticsController.getTopProducts);
+router.get('/dashboard', auth, adminOnly, analyticsController.getDashboardStats);
 
 export default router;

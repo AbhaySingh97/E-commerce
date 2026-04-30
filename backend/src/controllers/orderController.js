@@ -1,76 +1,104 @@
 import { Order } from '../models/Order.js';
 import { Cart } from '../models/Cart.js';
 import { Product } from '../models/Product.js';
-import { Payment } from '../models/Payment.js';
+import { Coupon } from '../models/Coupon.js';
+import { Counter } from '../models/Counter.js';
+import { calculateCartTotals } from './cartController.js';
 import mongoose from 'mongoose';
 
-const generateOrderNumber = async () => {
-  const count = await Order.countDocuments();
-  const orderNum = `ORD-${new Date().getFullYear()}-${String(count + 1).padStart(5, '0')}`;
-  return orderNum;
+const generateOrderNumber = async (session) => {
+  const year = new Date().getFullYear();
+  const counter = await Counter.findOneAndUpdate(
+    { name: `order-${year}` },
+    { $inc: { sequence: 1 } },
+    { new: true, upsert: true, session }
+  );
+  return `ORD-${year}-${String(counter.sequence).padStart(5, '0')}`;
 };
 
 export const createOrder = async (req, res) => {
+  const session = await mongoose.startSession();
+
   try {
-    const { addressId, paymentMethod = 'razorpay' } = req.body;
-    
-    const cart = await Cart.findOne({ user: req.userId }).populate('items.product');
-    if (!cart || cart.items.length === 0) {
-      return res.status(400).json({ error: 'Cart is empty' });
-    }
-    
-    const orderNumber = await generateOrderNumber();
-    
-    let subtotal = 0;
-    const items = cart.items.map((item) => {
-      const total = item.price * item.quantity;
-      subtotal += total;
-      return {
+    const order = await session.withTransaction(async () => {
+      const { paymentMethod = 'razorpay' } = req.body;
+
+      const cart = await Cart.findOne({ user: req.userId })
+        .session(session)
+        .populate('items.product')
+        .populate('coupon');
+
+      if (!cart || cart.items.length === 0) {
+        const error = new Error('Cart is empty');
+        error.statusCode = 400;
+        throw error;
+      }
+
+      if (!req.body.billingAddress || !req.body.shippingAddress) {
+        const error = new Error('Billing and shipping addresses are required');
+        error.statusCode = 400;
+        throw error;
+      }
+
+      const totals = calculateCartTotals(cart.items, cart.coupon);
+      const orderNumber = await generateOrderNumber(session);
+      const items = cart.items.map((item) => ({
         product: item.product._id,
         name: item.name,
         image: item.image,
         price: item.price,
         quantity: item.quantity,
-        total
-      };
-    });
-    
-    const discountAmount = cart.discountAmount || 0;
-    const taxAmount = Math.round((subtotal - discountAmount) * 0.18);
-    const shippingAmount = subtotal > 500 ? 0 : 50;
-    const totalAmount = subtotal - discountAmount + taxAmount + shippingAmount;
-    
-    const order = new Order({
-      orderNumber,
-      user: req.userId,
-      items,
-      billingAddress: req.body.billingAddress,
-      shippingAddress: req.body.shippingAddress,
-      subtotal,
-      taxAmount,
-      shippingAmount,
-      discountAmount,
-      totalAmount,
-      paymentMethod,
-      status: 'pending',
-      statusHistory: [{ status: 'pending', timestamp: new Date() }]
-    });
-    
-    await order.save();
-    
-    for (const item of cart.items) {
-      const product = await Product.findById(item.product);
-      if (product) {
-        product.stock -= item.quantity;
-        await product.save();
+        total: item.price * item.quantity
+      }));
+
+      for (const item of cart.items) {
+        const result = await Product.updateOne(
+          { _id: item.product._id, stock: { $gte: item.quantity } },
+          { $inc: { stock: -item.quantity } },
+          { session }
+        );
+
+        if (result.modifiedCount !== 1) {
+          const error = new Error(`Insufficient stock for ${item.name}`);
+          error.statusCode = 400;
+          throw error;
+        }
       }
-    }
-    
-    await Cart.findByIdAndDelete(cart._id);
-    
+
+      const [createdOrder] = await Order.create([{
+        orderNumber,
+        user: req.userId,
+        items,
+        billingAddress: req.body.billingAddress,
+        shippingAddress: req.body.shippingAddress,
+        subtotal: totals.totalAmount,
+        taxAmount: totals.taxAmount,
+        shippingAmount: totals.shippingAmount,
+        discountAmount: totals.discountAmount,
+        totalAmount: totals.grandTotal,
+        paymentMethod,
+        coupon: cart.coupon?._id,
+        status: 'pending',
+        statusHistory: [{ status: 'pending', timestamp: new Date() }]
+      }], { session });
+
+      if (cart.coupon?._id) {
+        await Coupon.updateOne(
+          { _id: cart.coupon._id },
+          { $inc: { usedCount: 1 } },
+          { session }
+        );
+      }
+
+      await Cart.findByIdAndDelete(cart._id, { session });
+      return createdOrder;
+    });
+
     res.status(201).json(order);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create order' });
+    res.status(error.statusCode || 500).json({ error: error.statusCode ? error.message : 'Failed to create order' });
+  } finally {
+    await session.endSession();
   }
 };
 

@@ -89,7 +89,7 @@ function App() {
       <Navbar />
       <main>
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<><HomePage /><Footer /></>} />
           <Route path="/products" element={<Products />} />
           <Route path="/products/:slug" element={<ProductDetail />} />
           <Route path="/categories" element={<Categories />} />
@@ -106,7 +106,6 @@ function App() {
           <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
       </main>
-      <Footer />
       <Dock items={dockItems} magnification={80} distance={150} />
     </div>
   );

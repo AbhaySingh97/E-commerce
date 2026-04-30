@@ -201,6 +201,7 @@ void main() {
     }
     resize();
 
+    let animationFrameId;
     const render = t => {
       uniforms.iTime.value = t * 0.001;
 
@@ -215,10 +216,10 @@ void main() {
       uniforms.mousePosition.value = [mousePositionRef.current.x, mousePositionRef.current.y];
 
       renderer.render({ scene: mesh });
-      requestAnimationFrame(render);
+      animationFrameId = requestAnimationFrame(render);
     };
 
-    requestAnimationFrame(render);
+    animationFrameId = requestAnimationFrame(render);
 
     const container = containerRef.current;
     return () => {
@@ -228,10 +229,24 @@ void main() {
         container.removeEventListener('mouseenter', handleMouseEnter);
         container.removeEventListener('mouseleave', handleMouseLeave);
       }
+      cancelAnimationFrame(animationFrameId);
       renderer.gl.getExtension('WEBGL_lose_context')?.loseContext();
       container?.removeChild(gl.canvas);
     };
-  }, []);
+  }, [
+    enableRainbow,
+    fadeDistance,
+    glowIntensity,
+    gridColor,
+    gridRotation,
+    gridSize,
+    gridThickness,
+    mouseInteraction,
+    mouseInteractionRadius,
+    opacity,
+    rippleIntensity,
+    vignetteStrength
+  ]);
 
   useEffect(() => {
     if (!uniformsRef.current) return;

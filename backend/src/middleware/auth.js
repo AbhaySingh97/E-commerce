@@ -1,6 +1,13 @@
 import jwt from 'jsonwebtoken';
 import { User } from '../models/User.js';
 
+const getJwtSecret = () => {
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET is required');
+  }
+  return process.env.JWT_SECRET;
+};
+
 export const auth = (req, res, next) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
@@ -9,7 +16,7 @@ export const auth = (req, res, next) => {
       return res.status(401).json({ error: 'No token provided' });
     }
     
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
+    const decoded = jwt.verify(token, getJwtSecret());
     req.userId = decoded.userId;
     next();
   } catch (error) {
@@ -22,7 +29,7 @@ export const optionalAuth = (req, res, next) => {
     const token = req.headers.authorization?.split(' ')[1];
     
     if (token) {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
+      const decoded = jwt.verify(token, getJwtSecret());
       req.userId = decoded.userId;
     }
     next();

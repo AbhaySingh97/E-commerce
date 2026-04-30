@@ -131,7 +131,7 @@ export const razorpayWebhook = async (req, res) => {
 
 export const getPaymentStatus = async (req, res) => {
   try {
-    const payment = await Payment.findById(req.params.id);
+    const payment = await Payment.findOne({ _id: req.params.id, user: req.userId });
     if (!payment) {
       return res.status(404).json({ error: 'Payment not found' });
     }

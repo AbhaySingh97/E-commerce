@@ -1,56 +1,79 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { orderAPI, wishlistAPI, productAPI } from '../services/api';
+import { orderAPI, wishlistAPI, productAPI, searchAPI } from '../services/api';
 import toast from 'react-hot-toast';
-import { mockProducts, categories, searchProducts, getProductBySlug } from '../data/mockData';
+import { motion } from 'framer-motion';
+import { FiInstagram, FiTwitter, FiFacebook, FiLinkedin, FiUser, FiHome, FiShoppingBag } from 'react-icons/fi';
+import Magnet from './Magnet';
+import TextType from './TextType';
+import RippleGrid from './RippleGrid';
 
-
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, index }) => {
   const { addToCart } = useCart();
-  const { user } = useAuth();
-  const navigate = useNavigate();
 
   const handleAddToCart = async () => {
-    if (!user) {
-      navigate('/login');
-      return;
+    try {
+      await addToCart(product._id, 1);
+      toast.success('Added to cart!');
+    } catch {
+      toast.error('Failed to add to cart');
     }
-    await addToCart(product._id, 1);
-    toast.success('Added to cart!');
   };
 
   return (
-    <div className="product-card">
+    <motion.div 
+      className="product-card"
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.1 }}
+    >
       <div className="product-image-container">
-        <img src={product.images[0] || 'https://via.placeholder.com/400'} alt={product.name} />
+        <img 
+          src={product.images?.[0] || 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80'} 
+          alt={product.name} 
+          onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80'; }}
+        />
       </div>
       <div className="product-details">
         <p className="brand">{product.brand}</p>
         <h3>{product.name}</h3>
         <div className="price">
           <span className="current">₹{product.price.toLocaleString()}</span>
-          {product.originalPrice && (
-            <span className="original">₹{product.originalPrice.toLocaleString()}</span>
-          )}
         </div>
         <button onClick={handleAddToCart} className="add-btn">Add to Cart</button>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
 export const Products = () => {
   const [products, setProducts] = useState([]);
   const [page, setPage] = useState(1);
-  const productsPerPage = 12;
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [searchParams] = useSearchParams();
+  const category = searchParams.get('category');
 
   useEffect(() => {
-    setProducts(mockProducts);
-  }, []);
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const res = await productAPI.getProducts({ page, limit: 12, category });
+        setProducts(res.data.products);
+        setTotalPages(res.data.pagination.pages);
+      } catch (err) {
+        toast.error('Failed to load products');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, [page, category]);
 
-  const paginatedProducts = products.slice((page - 1) * productsPerPage, page * productsPerPage);
+  if (loading) return <div className="page"><div className="loading">Loading...</div></div>;
 
   return (
     <div className="page products">
@@ -59,12 +82,12 @@ export const Products = () => {
         <div className="line"></div>
       </div>
       <div className="product-grid">
-        {paginatedProducts.map(p => <ProductCard key={p._id} product={p} />)}
+        {products.map((p, i) => <ProductCard key={p._id} product={p} index={i} />)}
       </div>
       <div className="pagination">
         <button onClick={() => setPage(p => p - 1)} disabled={page === 1}>Prev</button>
-        <span>Page {page} of {Math.ceil(products.length / productsPerPage)}</span>
-        <button onClick={() => setPage(p => p + 1)} disabled={page * productsPerPage >= products.length}>Next</button>
+        <span>Page {page} of {totalPages}</span>
+        <button onClick={() => setPage(p => p + 1)} disabled={page === totalPages}>Next</button>
       </div>
     </div>
   );
@@ -74,31 +97,38 @@ export const ProductDetail = () => {
   const [product, setProduct] = useState(null);
   const { slug } = useParams();
   const { addToCart } = useCart();
-  const { user } = useAuth();
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (slug) {
-      const found = getProductBySlug(slug);
-      setProduct(found || null);
+      setLoading(true);
+      productAPI.getProduct(slug)
+        .then(res => setProduct(res.data))
+        .catch(() => toast.error('Product not found'))
+        .finally(() => setLoading(false));
     }
   }, [slug]);
 
-  if (!product) return <div className="page"><div className="loading">Loading...</div></div>;
+  if (loading) return <div className="page"><div className="loading">Loading...</div></div>;
+  if (!product) return <div className="page"><h1>Product not found</h1></div>;
 
   const handleAddToCart = async () => {
-    if (!user) {
-      navigate('/login');
-      return;
+    try {
+      await addToCart(product._id, 1);
+      toast.success('Added to cart!');
+    } catch {
+      toast.error('Failed to add to cart');
     }
-    await addToCart(product._id, 1);
-    toast.success('Added to cart!');
   };
 
   return (
     <div className="page product-detail">
       <div className="product-image">
-        <img src={product.images[0] || 'https://via.placeholder.com/400'} alt={product.name} />
+        <img 
+          src={product.images?.[0] || 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80'} 
+          alt={product.name} 
+          onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80'; }}
+        />
       </div>
       <div className="product-info">
         <h1>{product.name}</h1>
@@ -206,18 +236,20 @@ export const Cart = () => {
       <div className="cart-items">
         {cart.items.map(item => (
           <div key={item._id} className="cart-item">
-            <img src={item.image || 'https://via.placeholder.com/100'} alt={item.name} />
-            <div>
+            <div className="cart-item-image">
+              <img src={item.product?.images?.[0] || item.image || 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=200&q=80'} alt={item.name} />
+            </div>
+            <div className="cart-item-info">
               <h3>{item.name}</h3>
-              <p>₹{item.price} x {item.quantity}</p>
+              <p className="cart-item-price">₹{item.price.toLocaleString()} × {item.quantity}</p>
             </div>
             <div className="quantity">
               <button onClick={() => updateQuantity(item._id, item.quantity - 1)}>-</button>
               <span>{item.quantity}</span>
               <button onClick={() => updateQuantity(item._id, item.quantity + 1)}>+</button>
             </div>
-            <p>₹{item.price * item.quantity}</p>
-            <button onClick={() => removeItem(item._id)}>Remove</button>
+            <p className="cart-item-total">₹{(item.price * item.quantity).toLocaleString()}</p>
+            <button className="remove-btn" onClick={() => removeItem(item._id)}>Remove</button>
           </div>
         ))}
       </div>
@@ -231,12 +263,12 @@ export const Cart = () => {
         <button onClick={handleApplyCoupon}>Apply</button>
       </div>
       <div className="cart-summary">
-        <p>Subtotal: ₹{cart.totalAmount}</p>
-        <p>Discount: -₹{cart.discountAmount}</p>
-        <p>Tax: ₹{cart.taxAmount}</p>
-        <p>Shipping: ₹{cart.shippingAmount}</p>
-        <h3>Total: ₹{cart.grandTotal}</h3>
-        <button onClick={() => navigate('/checkout')}>Checkout</button>
+        <p><span>Subtotal</span> <span>₹{cart.totalAmount.toLocaleString()}</span></p>
+        <p><span>Discount</span> <span>-₹{cart.discountAmount.toLocaleString()}</span></p>
+        <p><span>Tax</span> <span>₹{cart.taxAmount.toLocaleString()}</span></p>
+        <p><span>Shipping</span> <span>₹{cart.shippingAmount.toLocaleString()}</span></p>
+        <h3><span>Total</span> <span>₹{cart.grandTotal.toLocaleString()}</span></h3>
+        <button onClick={() => navigate('/checkout')}>Proceed to Checkout</button>
       </div>
     </div>
   );
@@ -333,9 +365,12 @@ export const Search = () => {
   useEffect(() => {
     if (query) {
       setLoading(true);
-      const results = searchProducts(query);
-      setProducts(results);
-      setLoading(false);
+      searchAPI.search({ q: query })
+        .then(res => setProducts(res.data.products || []))
+        .catch(() => toast.error('Search failed'))
+        .finally(() => setLoading(false));
+    } else {
+      setProducts([]);
     }
   }, [query]);
 
@@ -364,20 +399,13 @@ export const Footer = () => {
           <h2>LuxeCart</h2>
           <p>Defining the standard of premium e-commerce.</p>
         </div>
+        <div className="footer-social-middle">
+          <a href="https://www.instagram.com/" target="_blank" rel="noreferrer" aria-label="Instagram"><FiInstagram size={24} /></a>
+          <a href="https://twitter.com/" target="_blank" rel="noreferrer" aria-label="Twitter"><FiTwitter size={24} /></a>
+          <a href="https://www.facebook.com/" target="_blank" rel="noreferrer" aria-label="Facebook"><FiFacebook size={24} /></a>
+          <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer" aria-label="Linkedin"><FiLinkedin size={24} /></a>
+        </div>
         <div className="footer-links">
-          <div>
-            <h3>Shop</h3>
-            <Link to="/products">All Products</Link>
-            <Link to="/">Featured</Link>
-            <Link to="/categories">Categories</Link>
-          </div>
-          <div>
-            <h3>Company</h3>
-            <Link to="/about">About Us</Link>
-            <Link to="/contact">Contact</Link>
-            <Link to="/cart">My Cart</Link>
-            <Link to="/wishlist">Wishlist</Link>
-          </div>
           <div>
             <h3>Support</h3>
             <Link to="/orders">Order Tracking</Link>
@@ -430,14 +458,34 @@ export const Checkout = () => {
 };
 
 export const Categories = () => {
-  const categoriesList = categories;
+  const [categoriesList, setCategoriesList] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    productAPI.getCategories()
+      .then(res => setCategoriesList(res.data))
+      .catch(() => toast.error('Failed to load categories'))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div className="page"><div className="loading">Loading...</div></div>;
 
   return (
     <div className="page categories">
-      <section className="hero">
+      <section className="hero" style={{ backgroundColor: '#000000' }}>
+        <div className="hero-bg">
+          <RippleGrid gridColor="#00d4ff" rippleIntensity={0.02} gridSize={25} gridThickness={15} mouseInteraction={true} mouseInteractionRadius={1.2} opacity={0.5} fadeDistance={0.8} />
+        </div>
         <div className="hero-content">
-          <h1>Shop by Category</h1>
-          <p>Explore our curated collections</p>
+          <Magnet padding={150} disabled={false} magnetStrength={30}>
+            <h1>Shop by Category</h1>
+          </Magnet>
+          <TextType
+            text="Explore our curated collections"
+            speed={80}
+            cursor={true}
+            waitBeforeStart={500}
+          />
         </div>
       </section>
       <div className="category-grid">
@@ -447,13 +495,7 @@ export const Categories = () => {
               {cat.image ? <img src={cat.image} alt={cat.name} /> : <div className="placeholder-img"></div>}
             </div>
             <h3>{cat.name}</h3>
-            <p>{cat.slug === 'fashion' && 'Premium apparel & accessories'}
-               {cat.slug === 'electronics' && 'Latest gadgets & tech'}
-               {cat.slug === 'home-living' && 'Home decor & essentials'}
-               {cat.slug === 'beauty' && 'Skincare & cosmetics'}
-               {cat.slug === 'sports' && 'Athletic gear & equipment'}
-               {cat.slug === 'books' && 'Bestsellers & more'}
-            </p>
+            <p>{cat.description}</p>
           </Link>
         ))}
       </div>
@@ -571,34 +613,116 @@ export const Contact = () => {
 export const Profile = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('orders');
+  const navigate = useNavigate();
 
   if (!user) {
-    return <div className="page"><h1>Please login to view your profile</h1><Link to="/login">Login</Link></div>;
+    return (
+      <div className="page empty-state">
+        <div className="empty-icon">👤</div>
+        <h1>Login Required</h1>
+        <p>Please login to view and manage your profile details.</p>
+        <Link to="/login" className="btn-primary">Go to Login</Link>
+      </div>
+    );
   }
 
   return (
     <div className="page profile">
-      <div className="profile-header">
-        <div className="profile-avatar">{user.name.charAt(0).toUpperCase()}</div>
-        <div>
-          <h1>{user.name}</h1>
-          <p>{user.email}</p>
-        </div>
-      </div>
-      <div className="profile-tabs">
-        <button className={activeTab === 'orders' ? 'active' : ''} onClick={() => setActiveTab('orders')}>My Orders</button>
-        <button className={activeTab === 'addresses' ? 'active' : ''} onClick={() => setActiveTab('addresses')}>Addresses</button>
-        <button className={activeTab === 'settings' ? 'active' : ''} onClick={() => setActiveTab('settings')}>Settings</button>
-      </div>
-      <div className="profile-content">
-        {activeTab === 'orders' && <Link to="/orders" className="btn-primary">View Orders</Link>}
-        {activeTab === 'addresses' && <p>No saved addresses. <Link to="/checkout">Add during checkout</Link></p>}
-        {activeTab === 'settings' && (
-          <div className="settings-section">
-            <p><strong>Account Status:</strong> {user.isVerified ? 'Verified' : 'Pending Verification'}</p>
-            <p><strong>Role:</strong> {user.role}</p>
+      <motion.div 
+        className="profile-header-premium"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <div className="avatar-wrapper">
+          <div className="profile-avatar-large">
+            {user.name.charAt(0).toUpperCase()}
           </div>
-        )}
+          <div className="status-indicator"></div>
+        </div>
+        <div className="user-info-main">
+          <h1>{user.name}</h1>
+          <p className="user-email">{user.email}</p>
+          <div className="user-badges">
+            <span className="badge-premium">{user.role === 'admin' ? 'Administrator' : 'Premium Member'}</span>
+            {user.isVerified && <span className="badge-verified">Verified</span>}
+          </div>
+        </div>
+      </motion.div>
+
+      <div className="profile-dashboard-grid">
+        <div className="profile-nav-sidebar">
+          <button 
+            className={`sidebar-link ${activeTab === 'orders' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('orders')}
+          >
+            <FiShoppingBag /> My Orders
+          </button>
+          <button 
+            className={`sidebar-link ${activeTab === 'addresses' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('addresses')}
+          >
+            <FiHome /> Addresses
+          </button>
+          <button 
+            className={`sidebar-link ${activeTab === 'settings' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('settings')}
+          >
+            <FiUser /> Account Settings
+          </button>
+        </div>
+
+        <motion.div 
+          className="profile-tab-content"
+          key={activeTab}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          {activeTab === 'orders' && (
+            <div className="tab-pane">
+              <h2>Recent Orders</h2>
+              <p className="tab-subtitle">Manage and track your recent purchases</p>
+              <div className="pane-action-card">
+                <p>View your complete order history and track deliveries.</p>
+                <button onClick={() => navigate('/orders')} className="btn-primary">View Full History</button>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'addresses' && (
+            <div className="tab-pane">
+              <h2>Saved Addresses</h2>
+              <p className="tab-subtitle">Manage your delivery and billing locations</p>
+              <div className="empty-pane-message">
+                <FiHome size={40} />
+                <p>No saved addresses yet.</p>
+                <button className="btn-secondary">Add New Address</button>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'settings' && (
+            <div className="tab-pane">
+              <h2>Account Settings</h2>
+              <p className="tab-subtitle">Manage your personal information and security</p>
+              <div className="settings-grid">
+                <div className="settings-item">
+                  <label>Full Name</label>
+                  <p>{user.name}</p>
+                </div>
+                <div className="settings-item">
+                  <label>Email Address</label>
+                  <p>{user.email}</p>
+                </div>
+                <div className="settings-item">
+                  <label>Account Type</label>
+                  <p className="capitalize">{user.role}</p>
+                </div>
+              </div>
+              <button className="btn-secondary" style={{ marginTop: '2rem' }}>Edit Profile</button>
+            </div>
+          )}
+        </motion.div>
       </div>
     </div>
   );
@@ -709,16 +833,7 @@ export const AdminDashboard = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    if (!user || user.role !== 'admin') {
-      navigate('/');
-      return;
-    }
-    loadData();
-  }, [user, activeTab]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     try {
       if (activeTab === 'orders') {
@@ -733,7 +848,15 @@ export const AdminDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (!user || user.role !== 'admin') {
+      navigate('/');
+      return;
+    }
+    loadData();
+  }, [user, navigate, loadData]);
 
   const updateStatus = async (orderId, status) => {
     try {

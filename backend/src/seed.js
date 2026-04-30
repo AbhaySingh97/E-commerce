@@ -11,29 +11,29 @@ const parentCategories = [
 ];
 
 const templates = [
-  { name: 'iPhone 15 Pro', sub: 'Smartphones', parent: 'Electronics', img: '1511707171634-5f897ff02aa9' },
-  { name: 'MacBook Air M3', sub: 'Laptops', parent: 'Electronics', img: '1496181133206-80ce9b88a853' },
-  { name: 'Sony WH-1000XM5', sub: 'Audio', parent: 'Electronics', img: '1505740420928-5e560c06d30e' },
-  { name: 'Nike Air Max', sub: 'Shoes', parent: 'Fashion', img: '1542291026-7eec264c27ff' },
-  { name: 'Designer Handbag', sub: 'Bags', parent: 'Fashion', img: '1584917865442-de89df76afd3' },
-  { name: 'Apple Watch Ultra', sub: 'Wearables', parent: 'Electronics', img: '1523275335684-37898b6baf30' },
-  { name: 'Ceramic Coffee Maker', sub: 'Kitchen', parent: 'Home & Garden', img: '1583847268964-b28dc2f51ac9' },
-  { name: 'Luxury Perfume', sub: 'Beauty', parent: 'Fashion', img: '1541795795-341448bb1043' },
-  { name: 'Modern Desk Lamp', sub: 'Lighting', parent: 'Home & Garden', img: '1534073828943-f43b351717b3' },
-  { name: 'Professional DSLR', sub: 'Cameras', parent: 'Electronics', img: '1516035069371-29a1b244cc32' },
-  { name: 'Mechanical Keyboard', sub: 'Accessories', parent: 'Electronics', img: '1511467687858-23d96c32e4ae' },
-  { name: 'Designer Sunglasses', sub: 'Eyewear', parent: 'Fashion', img: '1572635196237-14b3f281503f' },
-  { name: 'Smart Home Speaker', sub: 'Smart Home', parent: 'Electronics', img: '1589492477829-5e65395b66cc' },
-  { name: 'Premium Yoga Mat', sub: 'Fitness', parent: 'Sports & Outdoors', img: '1517836357463-d25dfeac3438' },
-  { name: 'Leather Wallet', sub: 'Accessories', parent: 'Fashion', img: '1627123430374-1edee176a052' },
-  { name: 'Electric Toothbrush', sub: 'Personal Care', parent: 'Home & Garden', img: '1559591932-e88c7d63633c' },
-  { name: 'Minimalist Wall Clock', sub: 'Decor', parent: 'Home & Garden', img: '1563851010515-2fe9842e6a73' },
-  { name: 'Ceramic Table Vase', sub: 'Decor', parent: 'Home & Garden', img: '1581783898377-1c85bc2bab11' },
-  { name: 'Scented Candle Set', sub: 'Home Fragrance', parent: 'Home & Garden', img: '1603006328328-9d109c210f60' },
-  { name: 'Hard Shell Suitcase', sub: 'Travel', parent: 'Sports & Outdoors', img: '1565026057447-bc90a3dceb87' }
+  { name: 'Apple iPhone 15 Pro', sub: 'Smartphones', parent: 'Electronics', img: '1511707171634-5f897ff02aa9', price: 129900 },
+  { name: 'MacBook Air M3', sub: 'Laptops', parent: 'Electronics', img: '1517336714731-48b2504644a6', price: 114900 },
+  { name: 'Sony WH-1000XM5', sub: 'Audio', parent: 'Electronics', img: '1505740420928-5e560c06d30e', price: 29990 },
+  { name: 'Nike Air Max Pulse', sub: 'Shoes', parent: 'Fashion', img: '1542291026-7eec264c27ff', price: 12995 },
+  { name: 'Prada Cleo Handbag', sub: 'Bags', parent: 'Fashion', img: '1584917865442-de89df76afd3', price: 215000 },
+  { name: 'Apple Watch Ultra 2', sub: 'Wearables', parent: 'Electronics', img: '1523275335684-37898b6baf30', price: 89900 },
+  { name: 'Stovetop Coffee Maker', sub: 'Kitchen', parent: 'Home & Garden', img: '1583847268964-b28dc2f51ac9', price: 4999 },
+  { name: 'Chanel No. 5 Perfume', sub: 'Beauty', parent: 'Fashion', img: '1594035910387-fea47794261f', price: 14500 },
+  { name: 'Artemide Tolomeo Lamp', sub: 'Lighting', parent: 'Home & Garden', img: '1534073828943-f43b351717b3', price: 24900 },
+  { name: 'Canon EOS R5 DSLR', sub: 'Cameras', parent: 'Electronics', img: '1516035069371-29a1b244cc32', price: 339995 },
+  { name: 'Keychron Q1 Keyboard', sub: 'Accessories', parent: 'Electronics', img: '1511467687858-23d96c32e4ae', price: 15999 },
+  { name: 'Ray-Ban Wayfarer Classic', sub: 'Eyewear', parent: 'Fashion', img: '1572635196237-14b3f281503f', price: 10990 },
+  { name: 'Sonos Era 300 Speaker', sub: 'Smart Home', parent: 'Electronics', img: '1589492477829-5e65395b66cc', price: 44900 },
+  { name: 'Lululemon Reversible Mat', sub: 'Fitness', parent: 'Sports & Outdoors', img: '1517836357463-d25dfeac3438', price: 7800 },
+  { name: 'Montblanc Wallet', sub: 'Accessories', parent: 'Fashion', img: '1627123430374-1edee176a052', price: 32000 },
+  { name: 'Oral-B iO Toothbrush', sub: 'Personal Care', parent: 'Home & Garden', img: '1559591932-e88c7d63633c', price: 25999 },
+  { name: 'Junghans Max Bill Clock', sub: 'Decor', parent: 'Home & Garden', img: '1563851010515-2fe9842e6a73', price: 45000 },
+  { name: 'Minimalist Ceramic Vase', sub: 'Decor', parent: 'Home & Garden', img: '1581783898377-1c85bc2bab11', price: 8500 },
+  { name: 'Diptyque Baies Candle', sub: 'Home Fragrance', parent: 'Home & Garden', img: '1603006328328-9d109c210f60', price: 6200 },
+  { name: 'Rimowa Cabin Suitcase', sub: 'Travel', parent: 'Sports & Outdoors', img: '1565026057447-bc90a3dceb87', price: 115000 }
 ];
 
-async function seedMassiveDatabase() {
+async function seedDatabase() {
   try {
     await mongoose.connect(process.env.MONGODB_URI);
     console.log('🚀 Connected to MongoDB Atlas');
@@ -41,30 +41,6 @@ async function seedMassiveDatabase() {
     await Category.deleteMany({});
     await Product.deleteMany({});
     console.log('🧹 Cleared data');
-
-    const adminExists = await User.findOne({ email: 'admin@luxecart.com' });
-    if (!adminExists) {
-      await User.create({
-        email: 'admin@luxecart.com',
-        password: 'admin123',
-        name: 'Admin User',
-        role: 'admin',
-        isVerified: true
-      });
-      console.log('👤 Created admin user: admin@luxecart.com / admin123');
-    }
-
-    const userExists = await User.findOne({ email: 'user@luxecart.com' });
-    if (!userExists) {
-      await User.create({
-        email: 'user@luxecart.com',
-        password: 'user123',
-        name: 'Test User',
-        role: 'customer',
-        isVerified: true
-      });
-      console.log('👤 Created test user: user@luxecart.com / user123');
-    }
 
     const catMap = {};
     for (const parent of parentCategories) {
@@ -84,39 +60,52 @@ async function seedMassiveDatabase() {
       }
     }
 
-    // 2. Generate 2000 Products from Templates
-    const TOTAL = 2000;
-    const BATCH = 100;
-    console.log(`🛍️ Cloning ${TOTAL} products from Master Templates...`);
+    console.log('🛍️ Seeding products...');
+    const productsToInsert = templates.map((t, i) => ({
+      name: t.name,
+      slug: t.name.toLowerCase().replace(/ /g, '-'),
+      SKU: `LUXE-${i}-${Math.random().toString(36).substring(5).toUpperCase()}`,
+      description: `Premium ${t.name}. Expertly crafted for those who demand the finest.`,
+      brand: t.name.split(' ')[0],
+      category: subMap[t.sub]._id,
+      status: 'active',
+      isFeatured: true,
+      price: t.price,
+      originalPrice: t.price + 5000,
+      stock: 50,
+      images: [`https://images.unsplash.com/photo-${t.img}?auto=format&fit=crop&q=80&w=800`],
+      attributes: { quality: 'Premium' }
+    }));
 
-    for (let i = 0; i < TOTAL; i += BATCH) {
-      const products = [];
-      for (let j = 0; j < BATCH; j++) {
-        const id = i + j;
-        const template = templates[id % templates.length];
-        const price = Math.floor(Math.random() * 50000) + 1000;
-        
-        products.push({
-          name: `${template.name} - Edition #${id}`,
-          slug: `${template.name.toLowerCase().replace(/ /g, '-')}-${id}`,
-          SKU: `SKU-${id}-${Math.random().toString(36).substring(5).toUpperCase()}`,
-          description: `Premium ${template.name}. Guaranteed luxury and performance. Edition ${id}.`,
-          brand: template.name.split(' ')[0],
-          category: subMap[template.sub]._id,
-          status: 'active',
-          isFeatured: id < 40,
-          price: price,
-          originalPrice: price + 2000,
-          stock: 100,
-          images: [`https://images.unsplash.com/photo-${template.img}?auto=format&fit=crop&q=80&w=800&sig=${id}`],
-          attributes: { edition: id }
+    // Variations with unique images where possible
+    const variations = [
+        { name: 'Chanel No. 5 (Exclusive)', img: '1592945403244-b3fbafd7f539', price: 21750, sub: 'Beauty' },
+        { name: 'Artemide Tolomeo (Gold Edition)', img: '1506332046475-5067d5284273', price: 37350, sub: 'Lighting' },
+        { name: 'iPhone 15 Pro (Titanium)', img: '1511707171634-5f897ff02aa9', price: 149900, sub: 'Smartphones' },
+        { name: 'Nike Air Max (Black)', img: '1549298916-b41d501d3772', price: 15995, sub: 'Shoes' }
+    ];
+
+    variations.forEach((v, i) => {
+        productsToInsert.push({
+            name: v.name,
+            slug: v.name.toLowerCase().replace(/ /g, '-'),
+            SKU: `LUXE-VAR-${i}`,
+            description: `An exclusive version of our flagship product.`,
+            brand: v.name.split(' ')[0],
+            category: subMap[v.sub]._id,
+            status: 'active',
+            isFeatured: false,
+            price: v.price,
+            originalPrice: v.price + 10000,
+            stock: 5,
+            images: [`https://images.unsplash.com/photo-${v.img}?auto=format&fit=crop&q=80&w=800`],
+            attributes: { type: 'Exclusive' }
         });
-      }
-      await Product.insertMany(products);
-      process.stdout.write('.');
-    }
+    });
 
-    console.log('\n\n✨ CLONE SEED COMPLETE!');
+    await Product.insertMany(productsToInsert);
+
+    console.log('✨ SEED COMPLETE!');
     process.exit(0);
   } catch (error) {
     console.error('❌ error:', error);
@@ -124,4 +113,4 @@ async function seedMassiveDatabase() {
   }
 }
 
-seedMassiveDatabase();
+seedDatabase();

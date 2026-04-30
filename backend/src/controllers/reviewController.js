@@ -5,8 +5,13 @@ import { Order } from '../models/Order.js';
 export const getProductReviews = async (req, res) => {
   try {
     const { page = 1, limit = 10, rating } = req.query;
+    const product = await Product.findOne({ slug: req.params.slug });
+
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
     
-    const query = { product: req.params.slug, status: 'approved' };
+    const query = { product: product._id, status: 'approved' };
     if (rating) query.rating = rating;
     
     const reviews = await Review.find(query)
@@ -18,7 +23,7 @@ export const getProductReviews = async (req, res) => {
     const total = await Review.countDocuments(query);
     
     const stats = await Review.aggregate([
-      { $match: { product: req.params.slug, status: 'approved' } },
+      { $match: { product: product._id, status: 'approved' } },
       { $group: { _id: '$rating', count: { $sum: 1 } } }
     ]);
     
@@ -32,14 +37,19 @@ export const createReview = async (req, res) => {
   try {
     const { productId, rating, title, comment, images } = req.body;
     
-    const product = await Product.findById(productId);
+    const product = productId
+      ? await Product.findById(productId)
+      : await Product.findOne({ slug: req.params.slug });
+
     if (!product) {
       return res.status(404).json({ error: 'Product not found' });
     }
+
+    const resolvedProductId = product._id;
     
     const hasOrdered = await Order.findOne({
       user: req.userId,
-      'items.product': productId,
+      'items.product': resolvedProductId,
       paymentStatus: 'paid',
       status: { $in: ['delivered', 'confirmed', 'processing', 'shipped'] }
     });
@@ -47,7 +57,7 @@ export const createReview = async (req, res) => {
     const isVerifiedPurchase = !!hasOrdered;
     
     const review = new Review({
-      product: productId,
+      product: resolvedProductId,
       user: req.userId,
       rating,
       title,
@@ -59,7 +69,7 @@ export const createReview = async (req, res) => {
     
     await review.save();
     
-    const reviews = await Review.find({ product: productId, status: 'approved' });
+    const reviews = await Review.find({ product: resolvedProductId, status: 'approved' });
     const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
     product.rating = totalRating / reviews.length;
     product.reviewCount = reviews.length;

@@ -1,48 +1,94 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import Magnet from './Magnet';
 import TextType from './TextType';
 import RippleGrid from './RippleGrid';
 import toast from 'react-hot-toast';
-import { mockProducts, getFeaturedProducts } from '../data/mockData';
+import { motion } from 'framer-motion';
+import { productAPI } from '../services/api';
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, index }) => {
   const { addToCart } = useCart();
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const handleAddToCart = async () => {
     if (!user) {
+      navigate('/login');
+      toast.error('Please login to add to cart');
       return;
     }
-    await addToCart(product._id, 1);
-    toast.success('Added to cart!');
+    try {
+      await addToCart(product._id, 1);
+      toast.success('Added to cart!');
+    } catch (err) {
+      toast.error('Failed to add to cart');
+    }
   };
 
   return (
-    <div className="product-card">
+    <motion.div 
+      className="product-card"
+      initial={{ opacity: 0, y: 50, scale: 0.9 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ 
+        duration: 0.6, 
+        delay: (index % 4) * 0.1,
+        ease: [0.215, 0.610, 0.355, 1.000]
+      }}
+    >
       <div className="product-image-container">
-        <img src={product.images[0] || 'https://via.placeholder.com/400'} alt={product.name} />
+        <img 
+          src={product.images?.[0] || 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80'} 
+          alt={product.name} 
+          onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80'; }}
+        />
       </div>
       <div className="product-details">
         <p className="brand">{product.brand}</p>
         <h3>{product.name}</h3>
         <div className="price">
-          <span className="current">₹{product.price.toLocaleString()}</span>
-          {product.originalPrice && (
-            <span className="original">₹{product.originalPrice.toLocaleString()}</span>
-          )}
+          <span className="current">₹{product.price?.toLocaleString()}</span>
         </div>
         <button onClick={handleAddToCart} className="add-btn">Add to Cart</button>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
 const HomePage = () => {
-  const products = mockProducts;
-  const featured = getFeaturedProducts();
+  const [products, setProducts] = useState([]);
+  const [featured, setFeatured] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchHomeData = async () => {
+      try {
+        const [productsRes, featuredRes] = await Promise.all([
+          productAPI.getNewArrivals(),
+          productAPI.getFeatured()
+        ]);
+        setProducts(productsRes.data);
+        setFeatured(featuredRes.data);
+      } catch (err) {
+        console.error('Failed to fetch homepage data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchHomeData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="page" style={{ background: '#000000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="loading-spinner"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="page home">
@@ -78,7 +124,7 @@ const HomePage = () => {
           <div className="line"></div>
         </div>
         <div className="product-grid">
-          {products.slice(0, 8).map(p => <ProductCard key={p._id} product={p} />)}
+          {products.slice(0, 6).map((p, i) => <ProductCard key={p._id} product={p} index={i} />)}
         </div>
         <Link to="/products" className="view-all-link">View All Products →</Link>
       </section>
@@ -103,7 +149,7 @@ const HomePage = () => {
             <div className="line"></div>
           </div>
           <div className="product-grid">
-            {featured.map(p => <ProductCard key={p._id} product={p} />)}
+            {featured.slice(0, 6).map((p, i) => <ProductCard key={p._id} product={p} index={i} />)}
           </div>
         </section>
       )}
@@ -136,7 +182,7 @@ const HomePage = () => {
           <div className="line"></div>
         </div>
         <div className="product-grid">
-          {products.map(p => <ProductCard key={p._id} product={p} />)}
+          {products.slice(0, 6).map((p, i) => <ProductCard key={p._id} product={p} index={i} />)}
         </div>
       </section>
     </div>

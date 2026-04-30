@@ -1,5 +1,8 @@
 import { Category } from '../models/Category.js';
 import { Product } from '../models/Product.js';
+import mongoose from 'mongoose';
+
+const SORT_OPTIONS = new Set(['createdAt', '-createdAt', 'price', '-price', 'name', '-name', 'rating', '-rating']);
 
 export const getCategories = async (req, res) => {
   try {
@@ -62,7 +65,18 @@ export const getProducts = async (req, res) => {
     
     const query = { status: 'active' };
     
-    if (category) query.category = category;
+    const categoryFilter = req.params.slug || category;
+    if (categoryFilter) {
+      if (mongoose.Types.ObjectId.isValid(categoryFilter)) {
+        query.category = categoryFilter;
+      } else {
+        const categoryDoc = await Category.findOne({ slug: categoryFilter, isActive: true });
+        if (!categoryDoc) {
+          return res.json({ products: [], pagination: { total: 0, page: Number(page), pages: 0 } });
+        }
+        query.category = categoryDoc._id;
+      }
+    }
     if (brand) query.brand = brand;
     if (minPrice || maxPrice) {
       query.price = {};
@@ -71,7 +85,7 @@ export const getProducts = async (req, res) => {
     }
     
     const products = await Product.find(query)
-      .sort(sort)
+      .sort(SORT_OPTIONS.has(sort) ? sort : '-createdAt')
       .skip((Number(page) - 1) * Number(limit))
       .limit(Number(limit))
       .populate('category', 'name slug');

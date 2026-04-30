@@ -1,5 +1,8 @@
 import { Product } from '../models/Product.js';
 import { Category } from '../models/Category.js';
+import mongoose from 'mongoose';
+
+const SORT_OPTIONS = new Set(['createdAt', '-createdAt', 'price', '-price', 'name', '-name', 'rating', '-rating']);
 
 export const searchProducts = async (req, res) => {
   try {
@@ -16,7 +19,17 @@ export const searchProducts = async (req, res) => {
       ];
     }
     
-    if (category) query.category = category;
+    if (category) {
+      if (mongoose.Types.ObjectId.isValid(category)) {
+        query.category = category;
+      } else {
+        const categoryDoc = await Category.findOne({ slug: category, isActive: true });
+        if (!categoryDoc) {
+          return res.json({ products: [], pagination: { total: 0, page: Number(page), pages: 0 } });
+        }
+        query.category = categoryDoc._id;
+      }
+    }
     if (brand) query.brand = brand;
     if (minPrice || maxPrice) {
       query.price = {};
@@ -25,7 +38,7 @@ export const searchProducts = async (req, res) => {
     }
     
     const products = await Product.find(query)
-      .sort(sort)
+      .sort(SORT_OPTIONS.has(sort) ? sort : '-createdAt')
       .skip((Number(page) - 1) * Number(limit))
       .limit(Number(limit))
       .populate('category', 'name slug');

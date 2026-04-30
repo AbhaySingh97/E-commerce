@@ -3,7 +3,7 @@ import { Product } from '../models/Product.js';
 import { Coupon } from '../models/Coupon.js';
 import mongoose from 'mongoose';
 
-const calculateCartTotals = (items, coupon) => {
+export const calculateCartTotals = (items, coupon) => {
   let totalAmount = 0;
   let discountAmount = 0;
   
@@ -65,18 +65,22 @@ export const addToCart = async (req, res) => {
   try {
     const { productId, quantity = 1 } = req.body;
     
+    if (!productId) {
+      return res.status(400).json({ error: 'Product ID is required' });
+    }
+    
     const product = await Product.findById(productId);
+    
     if (!product) {
       return res.status(404).json({ error: 'Product not found' });
     }
-    
+
     if (product.stock < quantity) {
       return res.status(400).json({ error: 'Insufficient stock' });
     }
     
-    let cart = null;
-    const userId = req.userId ? new mongoose.Types.ObjectId(req.userId) : null;
     const sessionId = req.sessionId || `guest_${Date.now()}`;
+    let cart;
     
     if (req.userId) {
       cart = await Cart.findOne({ user: req.userId });
@@ -86,14 +90,14 @@ export const addToCart = async (req, res) => {
     
     if (!cart) {
       cart = new Cart({
-        user: userId,
-        sessionId: req.userId ? undefined : sessionId,
+        user: req.userId ? new mongoose.Types.ObjectId(req.userId) : null,
+        sessionId: req.userId ? null : sessionId,
         items: []
       });
     }
     
     const existingItem = cart.items.find(
-      (item) => item.product.toString() === productId
+      (item) => item.product && item.product.toString() === productId
     );
     
     if (existingItem) {
@@ -111,7 +115,6 @@ export const addToCart = async (req, res) => {
     await cart.save();
     res.status(201).json(cart);
   } catch (error) {
-    console.error('Add to cart error:', error);
     res.status(500).json({ error: 'Failed to add to cart', details: error.message });
   }
 };
@@ -143,7 +146,11 @@ export const updateCartItem = async (req, res) => {
       return res.status(400).json({ error: 'Insufficient stock' });
     }
     
-    item.quantity = quantity;
+    if (quantity < 1) {
+      cart.items = cart.items.filter((cartItem) => cartItem._id.toString() !== variantId);
+    } else {
+      item.quantity = quantity;
+    }
     await cart.save();
     res.json(cart);
   } catch (error) {
@@ -228,8 +235,13 @@ export const applyCoupon = async (req, res) => {
     }
     
     cart.coupon = coupon._id;
+    cart.totalAmount = totals.totalAmount;
+    cart.discountAmount = totals.discountAmount;
+    cart.taxAmount = totals.taxAmount;
+    cart.shippingAmount = totals.shippingAmount;
+    cart.grandTotal = totals.grandTotal;
     await cart.save();
-    res.json({ ...cart.toObject(), coupon });
+    res.json({ ...cart.toObject(), ...totals, coupon });
   } catch (error) {
     res.status(500).json({ error: 'Failed to apply coupon' });
   }
