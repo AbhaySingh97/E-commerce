@@ -140,6 +140,43 @@ export const getNewArrivals = async (req, res) => {
   }
 };
 
+export const getProductFilterMeta = async (req, res) => {
+  try {
+    const [brands, priceStats, categories] = await Promise.all([
+      Product.distinct('brand', { status: 'active', brand: { $nin: [null, ''] } }),
+      Product.aggregate([
+        { $match: { status: 'active' } },
+        {
+          $group: {
+            _id: null,
+            minPrice: { $min: '$price' },
+            maxPrice: { $max: '$price' }
+          }
+        }
+      ]),
+      Category.find({ isActive: true }).sort({ order: 1 }).select('name slug')
+    ]);
+
+    res.json({
+      brands: brands.sort(),
+      categories,
+      price: {
+        min: priceStats[0]?.minPrice || 0,
+        max: priceStats[0]?.maxPrice || 0
+      },
+      sortOptions: [
+        { value: '-createdAt', label: 'Newest first' },
+        { value: 'price', label: 'Price: low to high' },
+        { value: '-price', label: 'Price: high to low' },
+        { value: '-rating', label: 'Top rated' },
+        { value: 'name', label: 'Name: A to Z' }
+      ]
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to get filter metadata' });
+  }
+};
+
 export const getRelatedProducts = async (req, res) => {
   try {
     const product = await Product.findOne({ slug: req.params.slug });

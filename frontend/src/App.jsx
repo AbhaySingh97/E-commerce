@@ -1,12 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import React, { Suspense, lazy, useEffect, useMemo, useState } from 'react';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { FiGrid, FiHome, FiShield, FiShoppingBag, FiShoppingCart, FiUser } from 'react-icons/fi';
 import Navbar from './components/Navbar';
-import { Products, ProductDetail, Login, Cart, Orders, Wishlist, Checkout, Search, Footer, Categories, About, Contact, Profile, OrderTracking, AdminDashboard } from './components/index';
 import HomePage from './components/HomePage';
 import MagicRings from './components/MagicRings';
 import Dock from './components/Dock';
-import { FiHome, FiShoppingBag, FiGrid, FiUser, FiShoppingCart, FiShield } from 'react-icons/fi';
+import Footer from './components/layout/Footer';
+import { AdminRoute, ProtectedRoute } from './components/routes/ProtectedRoute';
+import { PageLoader } from './components/common/PageState';
 import { useAuth } from './context/AuthContext';
+import { trackPageView } from './lib/analytics';
+
+const ProductsPage = lazy(() => import('./pages/ProductsPage'));
+const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'));
+const AuthPage = lazy(() => import('./pages/AuthPage'));
+const CartPage = lazy(() => import('./pages/CartPage'));
+const OrdersPage = lazy(() => import('./pages/OrdersPage'));
+const WishlistPage = lazy(() => import('./pages/WishlistPage'));
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
+const SearchPage = lazy(() => import('./pages/SearchPage'));
+const CategoriesPage = lazy(() => import('./pages/CategoriesPage'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const OrderTrackingPage = lazy(() => import('./pages/OrderTrackingPage'));
+const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage'));
 
 const WelcomeScreen = ({ onFinished }) => {
   const [fadeOut, setFadeOut] = useState(false);
@@ -47,66 +65,81 @@ const WelcomeScreen = ({ onFinished }) => {
       </div>
       <div className="welcome-content">
         <div className="welcome-logo-wrapper">
-          <span className="welcome-letter">L</span>
-          <span className="welcome-letter">u</span>
-          <span className="welcome-letter">x</span>
-          <span className="welcome-letter">e</span>
-          <span className="welcome-letter">C</span>
-          <span className="welcome-letter">a</span>
-          <span className="welcome-letter">r</span>
-          <span className="welcome-letter">t</span>
+          {['L', 'u', 'x', 'e', 'C', 'a', 'r', 't'].map((letter, index) => (
+            <span key={`${letter}-${index}`} className="welcome-letter">{letter}</span>
+          ))}
         </div>
         <div className="welcome-divider"></div>
-        <p className="welcome-tagline">Curating Elegance For You</p>
+        <p className="welcome-tagline">Curating elegance for you</p>
       </div>
     </div>
   );
 };
 
 function App() {
-  const [loading, setLoading] = useState(true);
+  const [welcomeReady, setWelcomeReady] = useState(false);
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const location = useLocation();
+  const { user, loading } = useAuth();
 
-  const dockItems = [
-    { icon: <FiHome size={22} />, label: 'Home', onClick: () => navigate('/') },
-    { icon: <FiShoppingBag size={22} />, label: 'Shop', onClick: () => navigate('/products') },
-    { icon: <FiGrid size={22} />, label: 'Categories', onClick: () => navigate('/categories') },
-    { icon: <FiShoppingCart size={22} />, label: 'Cart', onClick: () => navigate('/cart') },
-    { icon: <FiUser size={22} />, label: user ? 'Profile' : 'Login', onClick: () => navigate(user ? '/profile' : '/login') },
-  ];
+  useEffect(() => {
+    const timer = setTimeout(() => setWelcomeReady(true), 900);
+    return () => clearTimeout(timer);
+  }, []);
 
-  if (user?.role === 'admin') {
-    dockItems.push({ icon: <FiShield size={22} />, label: 'Admin', onClick: () => navigate('/admin') });
+  useEffect(() => {
+    trackPageView(location.pathname, { search: location.search });
+  }, [location.pathname, location.search]);
+
+  const dockItems = useMemo(() => {
+    const items = [
+      { icon: <FiHome size={22} />, label: 'Home', onClick: () => navigate('/') },
+      { icon: <FiShoppingBag size={22} />, label: 'Shop', onClick: () => navigate('/products') },
+      { icon: <FiGrid size={22} />, label: 'Categories', onClick: () => navigate('/categories') },
+      { icon: <FiShoppingCart size={22} />, label: 'Cart', onClick: () => navigate('/cart') },
+      { icon: <FiUser size={22} />, label: user ? 'Profile' : 'Login', onClick: () => navigate(user ? '/profile' : '/login') },
+    ];
+
+    if (user?.role === 'admin') {
+      items.push({ icon: <FiShield size={22} />, label: 'Admin', onClick: () => navigate('/admin') });
+    }
+
+    return items;
+  }, [navigate, user]);
+
+  if (!welcomeReady || loading) {
+    return <WelcomeScreen onFinished={() => setWelcomeReady(true)} />;
   }
 
-  if (loading) {
-    return <WelcomeScreen onFinished={() => setLoading(false)} />;
-  }
+  const hideDock = location.pathname.startsWith('/admin') || location.pathname === '/login' || location.pathname === '/checkout';
+  const hideFooter = location.pathname.startsWith('/admin');
 
   return (
     <div className="app">
       <Navbar />
-      <main>
-        <Routes>
-          <Route path="/" element={<><HomePage /><Footer /></>} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/products/:slug" element={<ProductDetail />} />
-          <Route path="/categories" element={<Categories />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/orders" element={<Orders />} />
-          <Route path="/wishlist" element={<Wishlist />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/orders/:id" element={<OrderTracking />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-        </Routes>
+      <main className="app-main">
+        <Suspense fallback={<PageLoader title="Loading page" message="Preparing the next view." />}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/products" element={<ProductsPage />} />
+            <Route path="/products/:slug" element={<ProductDetailPage />} />
+            <Route path="/categories" element={<CategoriesPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/search" element={<SearchPage />} />
+            <Route path="/login" element={<AuthPage />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
+            <Route path="/wishlist" element={<ProtectedRoute><WishlistPage /></ProtectedRoute>} />
+            <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+            <Route path="/orders/:id" element={<ProtectedRoute><OrderTrackingPage /></ProtectedRoute>} />
+            <Route path="/admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
+          </Routes>
+        </Suspense>
       </main>
-      <Dock items={dockItems} magnification={80} distance={150} />
+      {!hideFooter && <Footer />}
+      {!hideDock && <Dock items={dockItems} magnification={80} distance={150} />}
     </div>
   );
 }

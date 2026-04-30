@@ -1,51 +1,74 @@
 import React from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { FiHeart, FiMenu, FiSearch, FiX } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { FiSearch } from 'react-icons/fi';
-import { mockProducts } from '../data/mockData';
+import { searchAPI } from '../services/api';
+import { trackEvent } from '../lib/analytics';
 
-export const Navbar = () => {
+const Navbar = () => {
   const { user, logout } = useAuth();
   const { cart } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
-  const isHomePage = location.pathname === '/';
-  const [scrolled, setScrolled] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState('');
   const [showSuggestions, setShowSuggestions] = React.useState(false);
+  const [suggestions, setSuggestions] = React.useState([]);
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [scrolled, setScrolled] = React.useState(false);
 
   React.useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      setScrolled(window.scrollY > 32);
     };
+    handleScroll();
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const suggestions = searchQuery.trim()
-    ? mockProducts.filter(p =>
-        p.name.toLowerCase().includes(searchQuery.toLowerCase())
-      ).slice(0, 5)
-    : [];
+  React.useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname, location.search]);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
-      setSearchQuery('');
-      setShowSuggestions(false);
+  React.useEffect(() => {
+    const query = searchQuery.trim();
+
+    if (query.length < 2) {
+      setSuggestions([]);
+      return undefined;
     }
+
+    const timeout = setTimeout(() => {
+      searchAPI.autocomplete(query)
+        .then((res) => setSuggestions(res.data || []))
+        .catch(() => setSuggestions([]));
+    }, 220);
+
+    return () => clearTimeout(timeout);
+  }, [searchQuery]);
+
+  const handleSearch = (event) => {
+    event.preventDefault();
+    const query = searchQuery.trim();
+
+    if (!query) return;
+
+    trackEvent('search_submit', { query, source: 'navbar' });
+    navigate(`/search?q=${encodeURIComponent(query)}`);
+    setShowSuggestions(false);
   };
 
-  const handleSuggestionClick = (slug) => {
-    navigate(`/products/${slug}`);
+  const handleSuggestionClick = (product) => {
+    trackEvent('search_autocomplete_select', { slug: product.slug, name: product.name });
     setSearchQuery('');
     setShowSuggestions(false);
+    navigate(`/products/${product.slug}`);
+  };
+
+  const handleLogout = () => {
+    trackEvent('logout');
+    logout();
+    navigate('/');
   };
 
   const cartItemCount = cart?.items?.reduce((total, item) => total + item.quantity, 0) || 0;
@@ -53,55 +76,78 @@ export const Navbar = () => {
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="nav-container">
-        {(!isHomePage || scrolled) && (
-          <>
-            <form className="nav-search-bar" onSubmit={handleSearch}>
-              <FiSearch className="search-icon" />
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setShowSuggestions(true);
-                }}
-                onFocus={() => setShowSuggestions(true)}
-                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-              />
-              {showSuggestions && suggestions.length > 0 && (
-                <div className="search-suggestions">
-                  {suggestions.map(p => (
-                    <div
-                      key={p._id}
-                      className="search-suggestion"
-                      onClick={() => handleSuggestionClick(p.slug)}
-                    >
-                      <img src={p.images[0] || 'https://via.placeholder.com/40'} alt={p.name} />
-                      <span>{p.name}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </form>
+        <Link to="/" className="nav-brand">LuxeCart</Link>
 
-            <div className="nav-links">
-              {user ? (
-                <>
-                  {user.role === 'admin' && (
-                    <Link to="/admin" className="nav-link admin-link">Admin</Link>
-                  )}
-                  <Link to="/cart" className="cart-link">
-                    Cart <span className="cart-count">{cartItemCount}</span>
-                  </Link>
-                  <button onClick={logout} className="logout-btn">Logout</button>
-                </>
-              ) : (
-                <Link to="/login" className="login-btn">Login</Link>
-              )}
-            </div>
-          </>
-        )}
+        <div className={`nav-panel ${mobileOpen ? 'open' : ''}`}>
+          <form className="nav-search-bar" onSubmit={handleSearch} role="search">
+            <FiSearch className="search-icon" />
+            <input
+              type="search"
+              placeholder="Search products, brands, categories"
+              value={searchQuery}
+              onChange={(event) => {
+                setSearchQuery(event.target.value);
+                setShowSuggestions(true);
+              }}
+              onFocus={() => setShowSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+              aria-label="Search products"
+            />
+            {showSuggestions && suggestions.length > 0 && (
+              <div className="search-suggestions" role="listbox" aria-label="Product suggestions">
+                {suggestions.map((product) => (
+                  <button
+                    key={product._id}
+                    type="button"
+                    className="search-suggestion"
+                    onMouseDown={(event) => event.preventDefault()}
+                    onClick={() => handleSuggestionClick(product)}
+                  >
+                    <img src={product.images?.[0] || 'https://via.placeholder.com/40'} alt="" />
+                    <span>{product.name}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </form>
+
+          <div className="nav-actions">
+            {user ? (
+              <>
+                <button type="button" className="nav-chip" onClick={() => navigate('/wishlist')}>
+                  <FiHeart />
+                  Wishlist
+                </button>
+                <button type="button" className="nav-chip" onClick={() => navigate('/cart')}>
+                  Cart <span className="cart-count">{cartItemCount}</span>
+                </button>
+                <button type="button" className="nav-chip" onClick={() => navigate('/profile')}>
+                  {user.name?.split(' ')[0] || 'Profile'}
+                </button>
+                {user.role === 'admin' && (
+                  <button type="button" className="nav-chip" onClick={() => navigate('/admin')}>
+                    Admin
+                  </button>
+                )}
+                <button type="button" onClick={handleLogout} className="logout-btn">Logout</button>
+              </>
+            ) : (
+              <Link to="/login" className="login-btn">Login</Link>
+            )}
+          </div>
+        </div>
+
+        <button
+          type="button"
+          className="mobile-menu-btn"
+          aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={mobileOpen}
+          onClick={() => setMobileOpen((current) => !current)}
+        >
+          {mobileOpen ? <FiX /> : <FiMenu />}
+        </button>
       </div>
+      {mobileOpen && <button type="button" className="nav-backdrop" aria-label="Close menu" onClick={() => setMobileOpen(false)} />}
     </nav>
   );
 };

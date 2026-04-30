@@ -1,188 +1,170 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { useCart } from '../context/CartContext';
-import Magnet from './Magnet';
-import TextType from './TextType';
-import RippleGrid from './RippleGrid';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { motion } from 'framer-motion';
-import { productAPI } from '../services/api';
-
-const ProductCard = ({ product, index }) => {
-  const { addToCart } = useCart();
-  const { user } = useAuth();
-  const navigate = useNavigate();
-
-  const handleAddToCart = async () => {
-    if (!user) {
-      navigate('/login');
-      toast.error('Please login to add to cart');
-      return;
-    }
-    try {
-      await addToCart(product._id, 1);
-      toast.success('Added to cart!');
-    } catch (err) {
-      toast.error('Failed to add to cart');
-    }
-  };
-
-  return (
-    <motion.div 
-      className="product-card"
-      initial={{ opacity: 0, y: 50, scale: 0.9 }}
-      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ 
-        duration: 0.6, 
-        delay: (index % 4) * 0.1,
-        ease: [0.215, 0.610, 0.355, 1.000]
-      }}
-    >
-      <div className="product-image-container">
-        <img 
-          src={product.images?.[0] || 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80'} 
-          alt={product.name} 
-          onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80'; }}
-        />
-      </div>
-      <div className="product-details">
-        <p className="brand">{product.brand}</p>
-        <h3>{product.name}</h3>
-        <div className="price">
-          <span className="current">₹{product.price?.toLocaleString()}</span>
-        </div>
-        <button onClick={handleAddToCart} className="add-btn">Add to Cart</button>
-      </div>
-    </motion.div>
-  );
-};
+import { FiArrowRight, FiMail } from 'react-icons/fi';
+import { productAPI, newsletterAPI } from '../services/api';
+import { useCart } from '../context/CartContext';
+import { formatCurrency } from '../lib/formatters';
+import BrandMarquee from './marketing/BrandMarquee';
+import CampaignBand from './marketing/CampaignBand';
+import CategorySpotlight from './marketing/CategorySpotlight';
+import EnterpriseHero from './marketing/EnterpriseHero';
+import SocialProof from './marketing/SocialProof';
+import TrustExperience from './marketing/TrustExperience';
+import ProductShowcaseCard from './product/ProductShowcaseCard';
+import SectionHeader from './ui/SectionHeader';
 
 const HomePage = () => {
-  const [products, setProducts] = useState([]);
+  const [newArrivals, setNewArrivals] = useState([]);
   const [featured, setFeatured] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(true);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchHomeData = async () => {
       try {
-        const [productsRes, featuredRes] = await Promise.all([
+        const [newArrivalsRes, featuredRes, categoriesRes] = await Promise.all([
           productAPI.getNewArrivals(),
-          productAPI.getFeatured()
+          productAPI.getFeatured(),
+          productAPI.getCategories()
         ]);
-        setProducts(productsRes.data);
-        setFeatured(featuredRes.data);
-      } catch (err) {
-        console.error('Failed to fetch homepage data:', err);
+        setNewArrivals(newArrivalsRes.data || []);
+        setFeatured(featuredRes.data || []);
+        setCategories(categoriesRes.data || []);
+      } catch {
+        toast.error('Failed to load storefront data');
       } finally {
         setLoading(false);
       }
     };
+
     fetchHomeData();
   }, []);
 
+  const heroProduct = useMemo(() => featured[0] || newArrivals[0], [featured, newArrivals]);
+  const bestSellers = useMemo(() => {
+    const source = featured.length ? featured : newArrivals;
+    return [...source].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 4);
+  }, [featured, newArrivals]);
+
+  const handleAddToCart = async (product) => {
+    try {
+      await addToCart(product._id, 1);
+      toast.success('Added to cart');
+    } catch {
+      toast.error('Failed to add to cart');
+    }
+  };
+
+  const handleNewsletterSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      await newsletterAPI.subscribe({ email });
+      toast.success('You are on the LuxeCart list');
+      setEmail('');
+    } catch (error) {
+      toast.error(error.response?.data?.error || 'Subscription failed');
+    }
+  };
+
   if (loading) {
     return (
-      <div className="page" style={{ background: '#000000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="page storefront-loading">
         <div className="loading-spinner"></div>
       </div>
     );
   }
 
   return (
-    <div className="page home">
-      <section className="hero">
-        <div className="hero-bg">
-          <RippleGrid gridColor="#00d4ff" rippleIntensity={0.02} gridSize={25} gridThickness={15} mouseInteraction={true} mouseInteractionRadius={1.2} opacity={0.5} fadeDistance={0.8} />
-        </div>
-        <div className="hero-content">
-          <Magnet padding={40} magnetStrength={8}>
-            <h1>LuxeCart</h1>
-          </Magnet>
-          <TextType
-              text={[
-                'Experience Elegance in Every Click.',
-                'Discover Curated Premium Collections.'
-              ]}
-              typingSpeed={75}
-              pauseDuration={1500}
-              className="hero-subtitle"
+    <div className="page home enterprise-home">
+      <EnterpriseHero featuredProduct={heroProduct} />
+      <BrandMarquee />
+
+      <CategorySpotlight categories={categories} />
+
+      <section className="home-section product-showcase-section">
+        <SectionHeader
+          eyebrow="Fresh arrivals"
+          title="New products with campaign-ready presentation"
+          description="A sharper product grid that keeps imagery, pricing, wishlist intent, and add-to-cart actions visible without breaking the dark premium theme."
+          action={<Link to="/products" className="section-link">View all <FiArrowRight /></Link>}
+        />
+        <div className="showcase-product-grid">
+          {newArrivals.slice(0, 8).map((product, index) => (
+            <ProductShowcaseCard
+              key={product._id}
+              product={product}
+              index={index}
+              onAddToCart={handleAddToCart}
             />
-          <div className="hero-buttons">
-            <Link to="/products" className="btn-primary">Shop Now</Link>
-            <Link to="/categories" className="btn-secondary">Browse Categories</Link>
-          </div>
+          ))}
         </div>
       </section>
 
-      <div className="page-divider"></div>
+      <CampaignBand />
 
-      <section className="home-content">
-        <div className="section-header">
-          <h2>New Arrivals</h2>
-          <div className="line"></div>
-        </div>
-        <div className="product-grid">
-          {products.slice(0, 6).map((p, i) => <ProductCard key={p._id} product={p} index={i} />)}
-        </div>
-        <Link to="/products" className="view-all-link">View All Products →</Link>
-      </section>
-
-      <section className="promo-section">
-        <div className="promo-card promo-left">
-          <h2>Summer Collection</h2>
-          <p>Up to 50% off on selected items</p>
-          <Link to="/products?tag=summer" className="btn-white">Shop Now</Link>
-        </div>
-        <div className="promo-card promo-right">
-          <h2>Premium Brands</h2>
-          <p>Exclusive deals on luxury brands</p>
-          <Link to="/products?tag=premium" className="btn-white">Explore</Link>
-        </div>
-      </section>
-
-      {featured.length > 0 && (
-        <section className="featured-section">
-          <div className="section-header">
-            <h2>Featured Collection</h2>
-            <div className="line"></div>
-          </div>
-          <div className="product-grid">
-            {featured.slice(0, 6).map((p, i) => <ProductCard key={p._id} product={p} index={i} />)}
+      {bestSellers.length > 0 && (
+        <section className="home-section best-seller-section">
+          <SectionHeader
+            eyebrow="Conversion shelf"
+            title="Best sellers customers trust first"
+            description="Use rating and demand signals to create a high-confidence product shelf above deeper browsing."
+            action={<Link to="/products?sort=-rating" className="section-link">Shop best sellers <FiArrowRight /></Link>}
+          />
+          <div className="best-seller-layout">
+            <div className="best-seller-feature">
+              <img src={bestSellers[0].images?.[0]} alt={bestSellers[0].name} />
+              <div>
+                <span>Top pick</span>
+                <h3>{bestSellers[0].name}</h3>
+                <p>{bestSellers[0].description}</p>
+                <strong>{formatCurrency(bestSellers[0].price)}</strong>
+                <button type="button" onClick={() => handleAddToCart(bestSellers[0])}>Add to cart</button>
+              </div>
+            </div>
+            <div className="best-seller-list">
+              {bestSellers.slice(1, 4).map((product) => (
+                <article key={product._id} className="best-seller-row">
+                  <img src={product.images?.[0]} alt={product.name} />
+                  <div>
+                    <span>{product.brand}</span>
+                    <h4>{product.name}</h4>
+                    <p>{formatCurrency(product.price)}</p>
+                  </div>
+                  <button type="button" onClick={() => handleAddToCart(product)}>Add</button>
+                </article>
+              ))}
+            </div>
           </div>
         </section>
       )}
 
-      <section className="newsletter-section">
-        <div className="newsletter-bg">
-          <div className="newsletter-shapes">
-            <div className="shape shape-1"></div>
-            <div className="shape shape-2"></div>
-            <div className="shape shape-3"></div>
-          </div>
-        </div>
+      <TrustExperience />
+      <SocialProof />
+
+      <section className="home-section newsletter-section enterprise-newsletter">
         <div className="newsletter-content">
-          <div className="newsletter-icon">✉️</div>
-          <h2>Subscribe to Our Newsletter</h2>
-          <p>Get exclusive offers, early access to new arrivals, and curated collections straight to your inbox. Join <strong>50,000+</strong> luxury shoppers.</p>
-          <form className="newsletter-form" onSubmit={(e) => { e.preventDefault(); toast.success('Thank you for subscribing!'); }}>
+          <div className="newsletter-icon"><FiMail /></div>
+          <p className="section-eyebrow">Private access</p>
+          <h2>Get early campaign access and member-only offers</h2>
+          <p>
+            Join the premium list for launch drops, loyalty updates, personalized product edits, and limited-time offers.
+          </p>
+          <form className="newsletter-form" onSubmit={handleNewsletterSubmit}>
             <div className="input-wrapper">
-              <input type="email" placeholder="Enter your email address" required />
+              <input
+                type="email"
+                placeholder="Enter your email address"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                required
+              />
               <button type="submit">Subscribe</button>
             </div>
           </form>
-          <p className="newsletter-note">By subscribing, you agree to our Privacy Policy. Unsubscribe anytime.</p>
-        </div>
-      </section>
-
-      <section className="all-products-section">
-        <div className="section-header">
-          <h2>All Products</h2>
-          <div className="line"></div>
-        </div>
-        <div className="product-grid">
-          {products.slice(0, 6).map((p, i) => <ProductCard key={p._id} product={p} index={i} />)}
+          <span className="newsletter-note">No spam. Premium drops, offers, and account-ready announcements only.</span>
         </div>
       </section>
     </div>

@@ -1,0 +1,102 @@
+.admin-overview-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.admin-tabs {
+  display: inline-flex;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  padding: 0.4rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.admin-tabs button {
+  border: none;
+  border-radius: 999px;
+  padding: 0.7rem 1rem;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.68);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.admin-tabs button.active {
+  background: white;
+  color: #000;
+}
+
+.admin-table-shell {
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 0.95rem 0.85rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-table th {
+  color: rgba(255, 255, 255, 0.64);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.admin-table td {
+  color: white;
+}
+
+.admin-table input,
+.admin-table select {
+  width: 100%;
+  min-width: 120px;
+  padding: 0.7rem 0.85rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.36);
+  color: white;
+}
+
+.analytics-row {
+  padding: 0.85rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.analytics-row:last-child {
+  border-bottom: none;
+}
+
+.admin-search-bar {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.admin-search-bar input {
+  width: 260px;
+}
+
+@media (max-width: 1100px) {
+  .admin-overview-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .admin-search-bar {
+    flex-direction: column;
+  }
+
+  .admin-search-bar input {
+    width: 100%;
+  }
+}

@@ -47,6 +47,7 @@ export const productAPI = {
   getProduct: (slug) => API.get(`/products/${slug}`),
   getFeatured: () => API.get('/products/featured'),
   getNewArrivals: () => API.get('/products/new-arrivals'),
+  getFilterMeta: () => API.get('/products/meta/filters'),
   getRelated: (slug) => API.get(`/products/${slug}/related`),
   getCategories: () => API.get('/categories'),
   getCategoryProducts: (slug) => API.get(`/categories/${slug}/products`),
@@ -80,12 +81,14 @@ export const orderAPI = {
 export const paymentAPI = {
   initiate: (data) => API.post('/payments/initiate', data),
   verify: (data) => API.post('/payments/verify', data),
+  getStatus: (id) => API.get(`/payments/${id}`),
 };
 
 export const reviewAPI = {
   getProductReviews: (slug, params) => API.get(`/products/${slug}/reviews`, { params }),
   createReview: (slug, data) => API.post(`/products/${slug}/reviews`, data),
   getRatingSummary: (slug) => API.get(`/products/${slug}/rating-summary`),
+  markHelpful: (id) => API.post(`/reviews/${id}/helpful`),
 };
 
 export const wishlistAPI = {
@@ -103,6 +106,16 @@ export const couponAPI = {
 export const searchAPI = {
   search: (params) => API.get('/search', { params }),
   autocomplete: (q) => API.get('/search/autocomplete', { params: { q } }),
+};
+
+export const newsletterAPI = {
+  subscribe: (data) => API.post('/newsletter/subscribe', data),
+};
+
+export const analyticsAPI = {
+  getDashboardStats: () => API.get('/analytics/dashboard'),
+  getSalesAnalytics: (params) => API.get('/analytics/sales', { params }),
+  getTopProducts: () => API.get('/analytics/top-products'),
 };
 
 export default API;

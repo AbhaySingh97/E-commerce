@@ -15,6 +15,7 @@ router.delete('/categories/:id', auth, adminOnly, categoryController.deleteCateg
 router.get('/products', productController.getProducts);
 router.get('/products/featured', productController.getFeaturedProducts);
 router.get('/products/new-arrivals', productController.getNewArrivals);
+router.get('/products/meta/filters', productController.getProductFilterMeta);
 router.get('/products/:slug', productController.getProductBySlug);
 router.get('/products/:slug/related', productController.getRelatedProducts);
 router.post('/products', auth, vendorOrAdmin, productController.createProduct);

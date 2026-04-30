@@ -12,6 +12,7 @@ import wishlistRoutes from './routes/wishlist.js';
 import couponRoutes from './routes/coupons.js';
 import searchRoutes from './routes/search.js';
 import analyticsRoutes from './routes/analytics.js';
+import newsletterRoutes from './routes/newsletter.js';
 import { sessionMiddleware } from './middleware/session.js';
 
 dotenv.config();
@@ -50,6 +51,7 @@ app.use('/api/v1/wishlist', wishlistRoutes);
 app.use('/api/v1/coupons', couponRoutes);
 app.use('/api/v1/search', searchRoutes);
 app.use('/api/v1/analytics', analyticsRoutes);
+app.use('/api/v1/newsletter', newsletterRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
