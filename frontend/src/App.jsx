@@ -30,8 +30,11 @@ const WelcomeScreen = ({ onFinished }) => {
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
-    const showTimer = setTimeout(() => setFadeOut(true), 2800);
-    const finishTimer = setTimeout(onFinished, 3400);
+    // Letters animate in at 0.1s–0.7s delays + 0.5s duration = last letter visible at ~1.3s
+    // Keep screen visible for 4.5s so user can enjoy the full animation
+    const showTimer = setTimeout(() => setFadeOut(true), 4500);
+    // Give 800ms for the fade-out animation to complete before unmounting
+    const finishTimer = setTimeout(onFinished, 5300);
     return () => {
       clearTimeout(showTimer);
       clearTimeout(finishTimer);
@@ -77,15 +80,16 @@ const WelcomeScreen = ({ onFinished }) => {
 };
 
 function App() {
-  const [welcomeReady, setWelcomeReady] = useState(false);
+  // Show welcome screen only once per session
+  const [showWelcome, setShowWelcome] = useState(() => !sessionStorage.getItem('caryqel_visited'));
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading } = useAuth();
 
-  useEffect(() => {
-    const timer = setTimeout(() => setWelcomeReady(true), 900);
-    return () => clearTimeout(timer);
-  }, []);
+  const handleWelcomeFinished = () => {
+    sessionStorage.setItem('caryqel_visited', 'true');
+    setShowWelcome(false);
+  };
 
   useEffect(() => {
     trackPageView(location.pathname, { search: location.search });
@@ -107,8 +111,8 @@ function App() {
     return items;
   }, [navigate, user]);
 
-  if (!welcomeReady || loading) {
-    return <WelcomeScreen onFinished={() => setWelcomeReady(true)} />;
+  if (showWelcome || loading) {
+    return <WelcomeScreen onFinished={handleWelcomeFinished} />;
   }
 
   const hideDock = location.pathname.startsWith('/admin') || location.pathname === '/login' || location.pathname === '/checkout';

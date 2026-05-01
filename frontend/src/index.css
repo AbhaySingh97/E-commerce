@@ -157,7 +157,6 @@ body {
 
 .welcome-screen-animate {
   animation: fadeOutScreen 0.8s ease forwards;
-  animation-delay: 2s;
 }
 
 @keyframes fadeOutScreen {
