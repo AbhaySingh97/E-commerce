@@ -25,14 +25,36 @@ const allowedOrigins = (process.env.CORS_ORIGIN || '')
   .map((origin) => origin.trim())
   .filter(Boolean);
 
+const allowedOriginRegexes = (process.env.CORS_ORIGIN_REGEX || '')
+  .split(',')
+  .map((pattern) => pattern.trim())
+  .filter(Boolean)
+  .map((pattern) => new RegExp(pattern));
+
+const isAllowedOrigin = (origin) => {
+  if (!origin) {
+    return true;
+  }
+
+  if (allowedOrigins.length === 0 && allowedOriginRegexes.length === 0) {
+    return true;
+  }
+
+  if (allowedOrigins.includes(origin)) {
+    return true;
+  }
+
+  return allowedOriginRegexes.some((pattern) => pattern.test(origin));
+};
+
 const corsOptions = {
   origin(origin, callback) {
-    if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+    if (isAllowedOrigin(origin)) {
       callback(null, true);
       return;
     }
 
-    callback(new Error('Not allowed by CORS'));
+    callback(new Error(`Origin ${origin} is not allowed by CORS`));
   },
   credentials: true
 };

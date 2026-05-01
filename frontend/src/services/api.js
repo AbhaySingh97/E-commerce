@@ -1,11 +1,13 @@
 import axios from 'axios';
 
+const configuredBaseURL = process.env.REACT_APP_API_URL?.replace(/\/$/, '');
+
 const defaultBaseURL = process.env.NODE_ENV === 'production'
   ? '/api/v1'
   : 'http://localhost:5000/api/v1';
 
 const API = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || defaultBaseURL,
+  baseURL: configuredBaseURL || defaultBaseURL,
 });
 
 API.interceptors.request.use((config) => {

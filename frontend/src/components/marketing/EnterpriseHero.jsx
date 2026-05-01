@@ -31,11 +31,7 @@ const EnterpriseHero = ({ featuredProduct }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
         >
-          <p className="hero-eyebrow">Premium commerce experience</p>
-          <h1>Luxury shopping built for attention, trust, and conversion.</h1>
-          <p className="hero-lede">
-            Discover curated products, fast checkout, verified sellers, premium campaigns, and a dark storefront designed to feel modern at every touchpoint.
-          </p>
+          <h1>Luxury shopping, built to convert.</h1>
           <div className="hero-actions">
             <Link to="/products" className="btn-primary hero-cta">
               Shop the collection <FiArrowRight />

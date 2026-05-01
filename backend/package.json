@@ -4,6 +4,9 @@
   "description": "E-Commerce Backend API",
   "main": "src/index.js",
   "type": "module",
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
     "dev": "nodemon src/index.js",
     "seed": "node src/seed.js",

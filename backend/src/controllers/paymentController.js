@@ -3,13 +3,37 @@ import { Order } from '../models/Order.js';
 import { Payment } from '../models/Payment.js';
 import crypto from 'crypto';
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || '',
-  key_secret: process.env.RAZORPAY_KEY_SECRET || ''
-});
+const getRazorpayConfig = () => {
+  const keyId = process.env.RAZORPAY_KEY_ID;
+  const keySecret = process.env.RAZORPAY_KEY_SECRET;
+
+  if (!keyId || !keySecret) {
+    return null;
+  }
+
+  return { keyId, keySecret };
+};
+
+const getRazorpayClient = () => {
+  const config = getRazorpayConfig();
+
+  if (!config) {
+    return null;
+  }
+
+  return new Razorpay({
+    key_id: config.keyId,
+    key_secret: config.keySecret
+  });
+};
 
 export const initiatePayment = async (req, res) => {
   try {
+    const razorpay = getRazorpayClient();
+    if (!razorpay) {
+      return res.status(503).json({ error: 'Payments are not configured' });
+    }
+
     const { orderId } = req.body;
     
     const order = await Order.findOne({ _id: orderId, user: req.userId });
@@ -48,6 +72,11 @@ export const initiatePayment = async (req, res) => {
 
 export const verifyPayment = async (req, res) => {
   try {
+    const config = getRazorpayConfig();
+    if (!config) {
+      return res.status(503).json({ error: 'Payments are not configured' });
+    }
+
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
     
     const payment = await Payment.findOne({ gatewayOrderId: razorpay_order_id });
@@ -56,7 +85,7 @@ export const verifyPayment = async (req, res) => {
     }
     
     const generatedSignature = crypto
-      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET || '')
+      .createHmac('sha256', config.keySecret)
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest('hex');
     
@@ -89,11 +118,15 @@ export const verifyPayment = async (req, res) => {
 
 export const razorpayWebhook = async (req, res) => {
   try {
-    const secret = process.env.RAZORPAY_KEY_SECRET || '';
+    const config = getRazorpayConfig();
+    if (!config) {
+      return res.status(503).json({ error: 'Payments are not configured' });
+    }
+
     const signature = req.headers['x-razorpay-signature'];
     
     const generatedSignature = crypto
-      .createHmac('sha256', secret)
+      .createHmac('sha256', config.keySecret)
       .update(JSON.stringify(req.body))
       .digest('hex');
     
@@ -143,6 +176,11 @@ export const getPaymentStatus = async (req, res) => {
 
 export const initiateRefund = async (req, res) => {
   try {
+    const razorpay = getRazorpayClient();
+    if (!razorpay) {
+      return res.status(503).json({ error: 'Payments are not configured' });
+    }
+
     const { paymentId } = req.body;
     
     const payment = await Payment.findById(paymentId);
