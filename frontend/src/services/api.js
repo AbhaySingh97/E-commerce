@@ -23,6 +23,11 @@ const API = axios.create({
   baseURL: getBaseURL(),
 });
 
+// Debug log for deployment troubleshooting
+if (process.env.NODE_ENV === 'production') {
+  console.log('Caryqel API BaseURL:', API.defaults.baseURL);
+}
+
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
@@ -46,6 +51,14 @@ API.interceptors.response.use(
     return response;
   },
   (error) => {
+    if (process.env.NODE_ENV === 'production') {
+      console.error('API Request Failed:', {
+        url: error.config?.url,
+        method: error.config?.method,
+        status: error.response?.status,
+        message: error.message
+      });
+    }
     return Promise.reject(error);
   }
 );

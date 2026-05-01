@@ -52,6 +52,7 @@ const HomePage = () => {
       }
 
       if (results.every((result) => result.status === 'rejected')) {
+        console.error('All home data fetches failed:', results.map(r => r.reason));
         toast.error('Live storefront data is unavailable. Showing preview content.');
       }
 
