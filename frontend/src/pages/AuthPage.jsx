@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { trackEvent } from '../lib/analytics';
+import { FiCheck } from 'react-icons/fi';
+import '../styles/auth.css';
 
 const AuthPage = () => {
   const [isRegister, setIsRegister] = useState(false);
@@ -45,9 +47,9 @@ const AuthPage = () => {
           <h1>{isRegister ? 'Create your Caryqel account' : 'Welcome back to Caryqel'}</h1>
           <p>Save addresses, track orders, manage your wishlist, and complete checkout faster.</p>
           <ul className="auth-benefits">
-            <li>Order history and delivery tracking</li>
-            <li>Saved shipping and billing addresses</li>
-            <li>Wishlist, reviews, and premium offers</li>
+            <li><FiCheck /> Order history and delivery tracking</li>
+            <li><FiCheck /> Saved shipping and billing addresses</li>
+            <li><FiCheck /> Wishlist, reviews, and premium offers</li>
           </ul>
         </div>
 
