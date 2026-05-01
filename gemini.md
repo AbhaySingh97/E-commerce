@@ -32,6 +32,40 @@ This file serves as the primary context for any AI assistant working on the **Ca
    - Descriptive variable names.
    - Minimalist logic, keeping components focused.
 
+## 📁 Directory Structure
+
+### 🌐 Frontend (`/frontend`)
+- `src/App.jsx`: Main entry point with React Router logic.
+- `src/components/`: Reusable UI components (Navbar, Footer, ProductCard, etc.).
+- `src/pages/`: Page-level components (Home, Shop, ProductDetails, Checkout, Admin, etc.).
+- `src/context/`: State management for Authentication (`AuthContext`) and Shopping Cart (`CartContext`).
+- `src/hooks/`: Custom React hooks for API calls and logic.
+- `src/services/`: API service layers using Axios/Fetch.
+- `src/styles/` & `index.css`: Styling system.
+- `vercel.json`: Deployment configuration for Vercel.
+
+### ⚙️ Backend (`/backend`)
+- `src/index.js`: Server entry point and database connection.
+- `src/app.js`: Express application setup, middleware, and route mounting.
+- `src/models/`: Mongoose schemas (User, Product, Order, Cart, Review, etc.).
+- `src/routes/`: Express router definitions.
+- `src/controllers/`: Logic for handling requests and interacting with models.
+- `src/middleware/`: Auth guards, error handlers, and file upload logic.
+- `src/utils/`: Helper functions (Token generation, etc.).
+- `render.yaml`: Blueprint for Render deployment.
+
+## 🗃 Database Schema Highlights
+- **User**: Name, email, password, role (admin/user), addresses.
+- **Product**: Name, description, price, stock, category, images, reviews.
+- **Order**: User reference, products, total price, payment status, shipping status.
+- **Review**: Product reference, user reference, rating, comment.
+- **Cart/Wishlist**: Temporary/Persistent storage for user selections.
+
+## 🔐 Core Workflows
+- **Authentication**: JWT-based auth stored in `localStorage` or Cookies. `AuthContext` provides `user` state and `login/logout` methods.
+- **Checkout & Payments**: User adds items to `CartContext` -> Checkout creates Order -> Razorpay script initialized -> Backend verifies payment and updates Order.
+- **Admin Dashboard**: CRUD operations for Products, Categories, and Orders. Accessible only via `isAdmin` middleware.
+
 ## 🤖 AI Behavioral Guidelines
 When working on this project, the AI should:
 - **Prioritize Visuals**: If asked to build a UI, make it look expensive and modern.
@@ -39,12 +73,11 @@ When working on this project, the AI should:
 - **Preserve Documentation**: Keep existing comments and docstrings.
 - **SEO & Performance**: Implement best practices (Semantic HTML, Meta tags, Alt text).
 
-## 📍 Quick Navigation
-- **Routes**: `/backend/src/routes`
-- **Models**: `/backend/src/models`
-- **Pages**: `/frontend/src/pages`
-- **Components**: `/frontend/src/components`
-- **Styles**: `/frontend/src/index.css` & `/frontend/src/styles`
+## 🛠 Commands Reference
+- **Install All**: `npm install --prefix frontend && npm install --prefix backend`
+- **Run Frontend**: `npm run dev --prefix frontend`
+- **Run Backend**: `npm run dev --prefix backend`
+- **Seed Data**: `node backend/src/seed.js`
 
 ---
-*Refer to `project-map.md` for a detailed technical breakdown.*
+*Updated: May 2026*
