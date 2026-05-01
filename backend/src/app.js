@@ -36,15 +36,19 @@ const isAllowedOrigin = (origin) => {
     return true;
   }
 
+  // Normalize current origin
+  const normalizedOrigin = origin.replace(/\/$/, '');
+
   if (allowedOrigins.length === 0 && allowedOriginRegexes.length === 0) {
     return true;
   }
 
-  if (allowedOrigins.includes(origin)) {
+  // Check against allowed origins (normalized)
+  if (allowedOrigins.some(ao => ao.replace(/\/$/, '') === normalizedOrigin)) {
     return true;
   }
 
-  return allowedOriginRegexes.some((pattern) => pattern.test(origin));
+  return allowedOriginRegexes.some((pattern) => pattern.test(normalizedOrigin));
 };
 
 const corsOptions = {

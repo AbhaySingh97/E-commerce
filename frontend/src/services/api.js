@@ -1,13 +1,26 @@
 import axios from 'axios';
 
-const configuredBaseURL = process.env.REACT_APP_API_URL?.replace(/\/$/, '');
+const getBaseURL = () => {
+  // Check if a specific API URL is provided via environment variables
+  let url = process.env.REACT_APP_API_URL;
+  
+  if (url) {
+    url = url.trim().replace(/\/$/, '');
+    // If the provided URL doesn't end with /api/v1, append it
+    if (!url.endsWith('/api/v1')) {
+      url += '/api/v1';
+    }
+    return url;
+  }
 
-const defaultBaseURL = process.env.NODE_ENV === 'production'
-  ? '/api/v1'
-  : 'http://localhost:5000/api/v1';
+  // Fallback for production vs development
+  return process.env.NODE_ENV === 'production'
+    ? '/api/v1' // Works if Vercel rewrites are configured
+    : 'http://localhost:5000/api/v1';
+};
 
 const API = axios.create({
-  baseURL: configuredBaseURL || defaultBaseURL,
+  baseURL: getBaseURL(),
 });
 
 API.interceptors.request.use((config) => {
