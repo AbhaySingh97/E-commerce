@@ -7,7 +7,7 @@ const Footer = () => {
     <footer className="footer">
       <div className="footer-content">
         <div className="footer-brand">
-          <h2>LuxeCart</h2>
+          <h2>caryqel</h2>
           <p>Premium storefront design backed by modern commerce workflows.</p>
         </div>
         <div className="footer-social-middle">
@@ -40,13 +40,13 @@ const Footer = () => {
           <div>
             <h3>Support</h3>
             <Link to="/contact">Contact</Link>
-            <p>support@luxecart.com</p>
+            <p>support@caryqel.com</p>
             <p>1-800-LUXE-000</p>
           </div>
         </div>
       </div>
       <div className="footer-bottom">
-        <p>© 2026 LuxeCart. Premium commerce, shipped with clarity.</p>
+        <p>© 2026 caryqel. Premium commerce, shipped with clarity.</p>
       </div>
     </footer>
   );

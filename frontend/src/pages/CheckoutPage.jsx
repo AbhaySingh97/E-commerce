@@ -117,7 +117,7 @@ const CheckoutPage = () => {
           amount: paymentResponse.data.amount,
           currency: paymentResponse.data.currency,
           order_id: paymentResponse.data.orderId,
-          name: 'LuxeCart',
+          name: 'Caryqel',
           description: `Order ${order.orderNumber}`,
           handler: async (response) => {
             try {

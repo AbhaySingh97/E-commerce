@@ -76,7 +76,7 @@ const Navbar = () => {
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="nav-container">
-        <Link to="/" className="nav-brand">LuxeCart</Link>
+        <Link to="/" className="nav-brand">caryqel</Link>
 
         <div className={`nav-panel ${mobileOpen ? 'open' : ''}`}>
           <form className="nav-search-bar" onSubmit={handleSearch} role="search">

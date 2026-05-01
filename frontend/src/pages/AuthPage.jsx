@@ -42,7 +42,7 @@ const AuthPage = () => {
       <div className="auth-layout">
         <div className="auth-copy">
           <span className="page-state-badge">Account access</span>
-          <h1>{isRegister ? 'Create your LuxeCart account' : 'Welcome back to LuxeCart'}</h1>
+          <h1>{isRegister ? 'Create your Caryqel account' : 'Welcome back to Caryqel'}</h1>
           <p>Save addresses, track orders, manage your wishlist, and complete checkout faster.</p>
           <ul className="auth-benefits">
             <li>Order history and delivery tracking</li>

@@ -49,7 +49,7 @@ const CatalogProductCard = ({
         </Link>
       </div>
       <div className="product-details">
-        <p className="brand">{product.brand || 'LuxeCart'}</p>
+        <p className="brand">{product.brand || 'Caryqel'}</p>
         <h3>
           <Link to={`/products/${product.slug}`}>{product.name}</Link>
         </h3>

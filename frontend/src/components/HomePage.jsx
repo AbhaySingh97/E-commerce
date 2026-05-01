@@ -80,7 +80,7 @@ const HomePage = () => {
     event.preventDefault();
     try {
       await newsletterAPI.subscribe({ email });
-      toast.success('You are on the LuxeCart list');
+      toast.success('You are on the Caryqel list');
       setEmail('');
     } catch (error) {
       toast.error(error.response?.data?.error || 'Subscription failed');

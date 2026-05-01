@@ -69,7 +69,7 @@ app.use(sessionMiddleware);
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'Healthy',
-    service: 'LuxeCart API',
+    service: 'Caryqel API',
     version: '1.0.0',
     timestamp: new Date().toISOString()
   });

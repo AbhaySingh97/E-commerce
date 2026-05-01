@@ -142,7 +142,7 @@ const ProductDetailPage = () => {
         <div className="product-detail-copy">
           <span className="page-state-badge">{product.category?.name || 'Premium product'}</span>
           <h1>{product.name}</h1>
-          <p className="product-detail-brand">{product.brand || 'LuxeCart'}</p>
+          <p className="product-detail-brand">{product.brand || 'Caryqel'}</p>
           <p className="product-detail-description">{product.description}</p>
           <div className="product-detail-price">
             <strong>{formatCurrency(product.price)}</strong>

@@ -32,7 +32,7 @@ const ProductShowcaseCard = ({ product, index = 0, onAddToCart }) => {
       </div>
       <div className="showcase-product-body">
         <div>
-          <p className="product-kicker">{product.brand || 'LuxeCart'}</p>
+          <p className="product-kicker">{product.brand || 'Caryqel'}</p>
           <h3>{product.name}</h3>
         </div>
         <div className="showcase-product-meta">

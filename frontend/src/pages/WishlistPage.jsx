@@ -97,7 +97,7 @@ const WishlistPage = () => {
             <article key={item._id} className="surface-card wishlist-row">
               <img src={product.images?.[0] || 'https://via.placeholder.com/120'} alt={product.name} />
               <div className="wishlist-row-copy">
-                <p>{product.brand || 'LuxeCart'}</p>
+                <p>{product.brand || 'Caryqel'}</p>
                 <h2>{product.name}</h2>
                 <span>{formatCurrency(product.price)}</span>
               </div>

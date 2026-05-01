@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'luxecart.analytics.events';
+const STORAGE_KEY = 'caryqel.analytics.events';
 const MAX_EVENTS = 250;
 
 const safeRead = () => {
@@ -29,7 +29,7 @@ export const trackEvent = (name, payload = {}) => {
   safeWrite(nextEvents);
 
   if (typeof window !== 'undefined') {
-    window.dispatchEvent(new CustomEvent('luxecart:analytics', { detail: event }));
+    window.dispatchEvent(new CustomEvent('caryqel:analytics', { detail: event }));
   }
 
   return event;

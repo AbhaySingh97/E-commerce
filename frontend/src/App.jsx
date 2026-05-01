@@ -65,7 +65,7 @@ const WelcomeScreen = ({ onFinished }) => {
       </div>
       <div className="welcome-content">
         <div className="welcome-logo-wrapper">
-          {['L', 'u', 'x', 'e', 'C', 'a', 'r', 't'].map((letter, index) => (
+          {['c', 'a', 'r', 'y', 'q', 'e', 'l'].map((letter, index) => (
             <span key={`${letter}-${index}`} className="welcome-letter">{letter}</span>
           ))}
         </div>

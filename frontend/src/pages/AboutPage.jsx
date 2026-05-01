@@ -4,9 +4,9 @@ const AboutPage = () => {
   return (
     <div className="page about-page">
       <div className="page-hero">
-        <span className="page-state-badge">About LuxeCart</span>
+        <span className="page-state-badge">About Caryqel</span>
         <h1>Premium commerce without unnecessary friction</h1>
-        <p>LuxeCart is positioned around curated discovery, trustworthy checkout, and a storefront that feels modern instead of crowded.</p>
+        <p>Caryqel is positioned around curated discovery, trustworthy checkout, and a storefront that feels modern instead of crowded.</p>
       </div>
 
       <div className="two-column-story">

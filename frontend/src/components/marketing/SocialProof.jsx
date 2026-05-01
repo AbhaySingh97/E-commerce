@@ -25,7 +25,7 @@ const SocialProof = () => {
       <SectionHeader
         eyebrow="Customer signal"
         title="Built to convert attention into loyalty"
-        description="Social proof, benefit framing, and product discovery sections work together without leaving the dark LuxeCart tone."
+        description="Social proof, benefit framing, and product discovery sections work together without leaving the dark Caryqel tone."
         align="center"
       />
       <div className="testimonial-grid">

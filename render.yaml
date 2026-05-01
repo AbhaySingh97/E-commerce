@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: luxecart-api
+    name: caryqel-api
     runtime: node
     rootDir: backend
     buildCommand: npm install

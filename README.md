@@ -1,4 +1,4 @@
-# LuxeCart
+# Caryqel
 
 This repository is configured for a split deployment:
 

@@ -20,14 +20,14 @@ const ContactPage = () => {
     <div className="page contact-page">
       <div className="page-hero">
         <span className="page-state-badge">Contact</span>
-        <h1>Reach the LuxeCart team</h1>
+        <h1>Reach the Caryqel team</h1>
         <p>Use this page for product help, order questions, partnership requests, or premium account support.</p>
       </div>
 
       <div className="contact-grid refined">
         <section className="surface-card">
           <h2>Support details</h2>
-          <p>support@luxecart.com</p>
+          <p>support@caryqel.com</p>
           <p>1-800-LUXE-000</p>
           <p>Mon-Fri, 9 AM to 6 PM</p>
           <p>123 Luxury Lane, Mumbai, Maharashtra 400001</p>

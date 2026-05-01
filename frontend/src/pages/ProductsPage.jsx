@@ -32,7 +32,7 @@ const ProductQuickView = ({ product, onClose, onAddToCart, onWishlist }) => {
           <img src={product.images?.[0] || fallbackImage} alt={product.name} />
         </div>
         <div className="quick-view-content">
-          <p className="brand">{product.brand || 'LuxeCart'}</p>
+          <p className="brand">{product.brand || 'Caryqel'}</p>
           <h2 id="quick-view-title">{product.name}</h2>
           <p>{product.description}</p>
           <div className="quick-view-meta">
