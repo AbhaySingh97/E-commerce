@@ -14,6 +14,8 @@ import SocialProof from './marketing/SocialProof';
 import TrustExperience from './marketing/TrustExperience';
 import ProductShowcaseCard from './product/ProductShowcaseCard';
 import SectionHeader from './ui/SectionHeader';
+import CircularGallery from './ui/CircularGallery';
+import MagicBento from './MagicBento';
 
 const HomePage = () => {
   const [newArrivals, setNewArrivals] = useState([]);
@@ -68,6 +70,13 @@ const HomePage = () => {
     return [...source].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 4);
   }, [featured, newArrivals]);
 
+  const galleryItems = useMemo(() => {
+    return featured.slice(0, 8).map(p => ({
+      image: p.images?.[0] || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=800&auto=format&fit=crop',
+      text: p.name
+    }));
+  }, [featured]);
+
   const handleAddToCart = async (product) => {
     try {
       await addToCart(product._id, 1);
@@ -102,6 +111,44 @@ const HomePage = () => {
       <BrandMarquee />
 
       <CategorySpotlight categories={categories} />
+
+      <section className="home-section bento-features-section">
+        <SectionHeader
+          eyebrow="The Caryqel Edge"
+          title="Designed for high-intent, premium shopping"
+          description="Explore the features that set Caryqel apart. From priority dispatch to global curation, every detail is engineered for excellence."
+        />
+        <MagicBento 
+          textAutoHide={false}
+          enableStars={true}
+          enableSpotlight={true}
+          enableBorderGlow={true}
+          enableTilt={true}
+          enableMagnetism={true}
+          clickEffect={true}
+          spotlightRadius={350}
+          particleCount={15}
+          glowColor="99, 102, 241"
+        />
+      </section>
+
+      {galleryItems.length > 0 && (
+        <section className="home-section gallery-section" style={{ height: '600px', width: '100%', position: 'relative', overflow: 'hidden', background: '#0a0a0a', padding: '0' }}>
+          <div style={{ position: 'absolute', top: '40px', left: '0', width: '100%', textAlign: 'center', zIndex: 10 }}>
+            <h2 style={{ color: '#fff', fontSize: '2.5rem', fontWeight: '300', letterSpacing: '0.05em', margin: 0, fontFamily: 'Outfit, sans-serif' }}>Curated Selections</h2>
+            <p style={{ color: 'rgba(255,255,255,0.6)', marginTop: '8px', fontSize: '1rem', fontWeight: '300' }}>Swipe to explore our featured collections</p>
+          </div>
+          <CircularGallery
+            items={galleryItems}
+            bend={3}
+            textColor="#ffffff"
+            borderRadius={0.05}
+            scrollEase={0.05}
+            scrollSpeed={1.5}
+            font="bold 24px Outfit, sans-serif"
+          />
+        </section>
+      )}
 
       <section className="home-section product-showcase-section">
         <SectionHeader

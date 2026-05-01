@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import SectionHeader from '../ui/SectionHeader';
+import { GridScan } from '../GridScan';
 import { getCategoryDescription, getCategoryImage, handleCategoryImageError } from '../../lib/categoryVisuals';
 
 const fallbackCategories = [
@@ -36,6 +37,17 @@ const CategorySpotlight = ({ categories = [] }) => {
 
   return (
     <section className="home-section category-spotlight-section">
+      <div className="category-spotlight-bg">
+        <GridScan
+          linesColor="#1e293b"
+          scanColor="#6366f1"
+          gridScale={0.15}
+          scanOpacity={0.2}
+          scanDuration={4}
+          scanDelay={1}
+          noiseIntensity={0.02}
+        />
+      </div>
       <SectionHeader
         eyebrow="Curated departments"
         title="Shop by intent, mood, and moment"

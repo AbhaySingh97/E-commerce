@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FiHeart, FiShoppingBag } from 'react-icons/fi';
+import Magnet from '../Magnet';
 
 const fallbackImage = 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80';
 
@@ -19,9 +20,11 @@ const ProductShowcaseCard = ({ product, index = 0, onAddToCart }) => {
     >
       <div className="showcase-product-media">
         {discount && <span className="discount-badge">{discount}% off</span>}
-        <button className="icon-float-btn" type="button" aria-label={`Save ${product.name}`}>
-          <FiHeart />
-        </button>
+        <Magnet padding={50} magnetStrength={3} wrapperClassName="icon-float-wrapper">
+          <button className="icon-float-btn" type="button" aria-label={`Save ${product.name}`}>
+            <FiHeart />
+          </button>
+        </Magnet>
         <img
           src={product.images?.[0] || fallbackImage}
           alt={product.name}
@@ -40,9 +43,11 @@ const ProductShowcaseCard = ({ product, index = 0, onAddToCart }) => {
             <strong>₹{product.price?.toLocaleString()}</strong>
             {product.originalPrice && <span>₹{product.originalPrice.toLocaleString()}</span>}
           </div>
-          <button className="round-cart-btn" type="button" onClick={() => onAddToCart?.(product)}>
-            <FiShoppingBag />
-          </button>
+          <Magnet padding={50} magnetStrength={3}>
+            <button className="round-cart-btn" type="button" onClick={() => onAddToCart?.(product)}>
+              <FiShoppingBag />
+            </button>
+          </Magnet>
         </div>
       </div>
     </motion.article>

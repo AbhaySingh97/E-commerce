@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import HomePage from './components/HomePage';
 import MagicRings from './components/MagicRings';
 import Dock from './components/Dock';
+import TargetCursor from './components/TargetCursor';
 import Footer from './components/layout/Footer';
 import { AdminRoute, ProtectedRoute } from './components/routes/ProtectedRoute';
 import { PageLoader } from './components/common/PageState';

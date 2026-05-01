@@ -46,9 +46,65 @@ body {
   pointer-events: none;
 }
 
-.app main {
+.app-main {
   position: relative;
   z-index: 1;
+}
+
+.category-spotlight-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.category-spotlight-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.category-spotlight-section > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Animation Backgrounds */
+.campaign-beams {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.auth-galaxy-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.auth-page {
+  position: relative;
+  overflow: hidden;
+}
+
+.campaign-band {
+  position: relative;
+  overflow: hidden;
+}
+
+.campaign-panel {
+  position: relative;
+  z-index: 1;
+}
+
+.icon-float-wrapper {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
 }
 
 /* Welcome Screen */
@@ -2178,7 +2234,8 @@ body {
   font-weight: 800;
 }
 
-.hero-copy h1 {
+.hero-copy h1,
+.hero-title-animated {
   margin-top: 0;
   font-family: 'Playfair Display', serif;
   font-size: clamp(2.7rem, 5.6vw, 5.35rem);
@@ -2187,6 +2244,8 @@ body {
   max-width: 640px;
   overflow-wrap: anywhere;
   text-wrap: balance;
+  min-height: calc(clamp(2.7rem, 5.6vw, 5.35rem) * 0.98 * 2); /* Reserve space for 2 lines */
+  display: block;
 }
 
 .hero-lede {

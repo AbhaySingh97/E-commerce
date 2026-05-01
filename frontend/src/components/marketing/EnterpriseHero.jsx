@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { FiArrowRight, FiShield, FiTruck, FiZap } from 'react-icons/fi';
 import RippleGrid from '../RippleGrid';
 import StatPill from '../ui/StatPill';
+import TextType from '../TextType';
 
 const heroProductImage = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=85&w=1100';
 
@@ -31,7 +32,15 @@ const EnterpriseHero = ({ featuredProduct }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
         >
-          <h1>Luxury shopping, built to convert.</h1>
+          <TextType
+            as="h1"
+            text={["Luxury shopping, built to convert.", "Caryqel: The future of commerce.", "Elegance in every single detail."]}
+            typingSpeed={100}
+            deletingSpeed={50}
+            pauseDuration={5000}
+            loop={true}
+            className="hero-title-animated"
+          />
           <div className="hero-actions">
             <Link to="/products" className="btn-primary hero-cta">
               Shop the collection <FiArrowRight />

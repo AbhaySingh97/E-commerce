@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { trackEvent } from '../lib/analytics';
 import { FiCheck } from 'react-icons/fi';
+import Galaxy from '../components/Galaxy';
 import '../styles/auth.css';
 
 const AuthPage = () => {
@@ -41,6 +42,16 @@ const AuthPage = () => {
 
   return (
     <div className="page auth auth-page">
+      <div className="auth-galaxy-bg">
+        <Galaxy
+          density={1.5}
+          starSpeed={0.3}
+          hueShift={220}
+          glowIntensity={0.5}
+          mouseInteraction={true}
+          transparent={true}
+        />
+      </div>
       <div className="auth-layout">
         <div className="auth-copy">
           <span className="page-state-badge">Account access</span>

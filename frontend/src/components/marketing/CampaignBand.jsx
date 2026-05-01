@@ -1,10 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FiArrowRight, FiClock, FiGift } from 'react-icons/fi';
+import Beams from '../Beams';
 
 const CampaignBand = () => {
   return (
     <section className="home-section campaign-band">
+      <div className="campaign-beams">
+        <Beams beamNumber={8} lightColor="#6366f1" />
+      </div>
       <div className="campaign-panel campaign-primary">
         <div>
           <p className="section-eyebrow">Live campaign</p>
