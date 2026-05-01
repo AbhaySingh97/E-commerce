@@ -5,6 +5,7 @@ import { FiArrowRight, FiMail } from 'react-icons/fi';
 import { productAPI, newsletterAPI } from '../services/api';
 import { useCart } from '../context/CartContext';
 import { formatCurrency } from '../lib/formatters';
+import { categories as fallbackCategories, getFeaturedProducts, getNewArrivals } from '../data/mockData';
 import BrandMarquee from './marketing/BrandMarquee';
 import CampaignBand from './marketing/CampaignBand';
 import CategorySpotlight from './marketing/CategorySpotlight';
@@ -24,20 +25,37 @@ const HomePage = () => {
 
   useEffect(() => {
     const fetchHomeData = async () => {
-      try {
-        const [newArrivalsRes, featuredRes, categoriesRes] = await Promise.all([
-          productAPI.getNewArrivals(),
-          productAPI.getFeatured(),
-          productAPI.getCategories()
-        ]);
-        setNewArrivals(newArrivalsRes.data || []);
-        setFeatured(featuredRes.data || []);
-        setCategories(categoriesRes.data || []);
-      } catch {
-        toast.error('Failed to load storefront data');
-      } finally {
-        setLoading(false);
+      const results = await Promise.allSettled([
+        productAPI.getNewArrivals(),
+        productAPI.getFeatured(),
+        productAPI.getCategories()
+      ]);
+
+      const [newArrivalsRes, featuredRes, categoriesRes] = results;
+
+      if (newArrivalsRes.status === 'fulfilled') {
+        setNewArrivals(newArrivalsRes.value.data || []);
+      } else {
+        setNewArrivals(getNewArrivals().slice(0, 8));
       }
+
+      if (featuredRes.status === 'fulfilled') {
+        setFeatured(featuredRes.value.data || []);
+      } else {
+        setFeatured(getFeaturedProducts().slice(0, 8));
+      }
+
+      if (categoriesRes.status === 'fulfilled') {
+        setCategories(categoriesRes.value.data || []);
+      } else {
+        setCategories(fallbackCategories.slice(0, 4));
+      }
+
+      if (results.every((result) => result.status === 'rejected')) {
+        toast.error('Live storefront data is unavailable. Showing preview content.');
+      }
+
+      setLoading(false);
     };
 
     fetchHomeData();

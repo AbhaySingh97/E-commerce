@@ -1,31 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { ErrorState, PageLoader } from '../components/common/PageState';
+import { PageLoader } from '../components/common/PageState';
+import { categories as fallbackCategories } from '../data/mockData';
 import { getCategoryDescription, getCategoryImage, handleCategoryImageError } from '../lib/categoryVisuals';
 import { productAPI } from '../services/api';
 
 const CategoriesPage = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     productAPI.getCategories()
       .then((response) => setCategories(response.data || []))
-      .catch((requestError) => {
-        setError(requestError.response?.data?.error || 'Failed to load categories');
-        toast.error('Failed to load categories');
+      .catch(() => {
+        setCategories(fallbackCategories);
+        toast.error('Live categories are unavailable. Showing preview categories.');
       })
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) {
     return <PageLoader title="Loading categories" message="Collecting the current shopping departments." />;
-  }
-
-  if (error) {
-    return <ErrorState title="Unable to load categories" message={error} />;
   }
 
   return (
