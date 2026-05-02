@@ -1,8 +1,14 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export const Icon = ({ name, className = "" }) => (
-  <span className={`icon ${className}`}>{name}</span>
+export const Icon = ({ name, className = "", style = {} }) => (
+  <span 
+    className={`icon ${className}`} 
+    style={{ ...style, display: 'inline-block', minWidth: '24px', textAlign: 'center' }}
+    data-icon={name}
+  >
+    {name}
+  </span>
 );
 
 export const TopAppBar = ({ showBack = true, title = "Caryqel" }) => {

@@ -22,25 +22,33 @@ const MobileContactPage = lazy(() => import('./pages/MobileContactPage'));
 
 const BottomNav = () => {
   const location = useLocation();
-  const isActive = (path) => location.pathname === path;
+  const isActive = (path) => {
+    if (path === '/') return location.pathname === '/';
+    return location.pathname.startsWith(path);
+  };
+
+  const navItems = [
+    { name: 'home', label: 'Home', path: '/' },
+    { name: 'search', label: 'Search', path: '/search' },
+    { name: 'storefront', label: 'Shop', path: '/products' },
+    { name: 'favorite', label: 'Wishlist', path: '/wishlist' },
+    { name: 'person', label: 'Profile', path: '/profile' },
+  ];
 
   return (
     <nav className="mobile-bottom-nav">
-      <Link to="/" className={`nav-link ${isActive('/') ? 'active' : ''}`}>
-        <Icon name="home" />
-      </Link>
-      <Link to="/search" className={`nav-link ${isActive('/search') ? 'active' : ''}`}>
-        <Icon name="search" />
-      </Link>
-      <Link to="/products" className={`nav-link ${isActive('/products') ? 'active' : ''}`}>
-        <Icon name="storefront" />
-      </Link>
-      <Link to="/wishlist" className={`nav-link ${isActive('/wishlist') ? 'active' : ''}`}>
-        <Icon name="favorite" />
-      </Link>
-      <Link to="/profile" className={`nav-link ${isActive('/profile') ? 'active' : ''}`}>
-        <Icon name="person" />
-      </Link>
+      {navItems.map((item) => (
+        <Link 
+          key={item.path} 
+          to={item.path} 
+          className={`nav-link ${isActive(item.path) ? 'active' : ''}`}
+        >
+          <div className="nav-link-content">
+            <Icon name={item.name} />
+            <span className="nav-label">{item.label}</span>
+          </div>
+        </Link>
+      ))}
     </nav>
   );
 };
