@@ -1,7 +1,4 @@
-import { useRef, useEffect, useCallback, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { gsap } from 'gsap';
-import { FiTruck, FiShield, FiLock, FiUserCheck, FiGlobe, FiHeadphones } from 'react-icons/fi';
+import { useIsMobile } from '../hooks/useIsMobile';
 import './MagicBento.css';
 
 const DEFAULT_PARTICLE_COUNT = 12;
@@ -470,21 +467,6 @@ const BentoCardGrid = ({ children, gridRef }) => (
   </div>
 );
 
-const useMobileDetection = () => {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  return isMobile;
-};
-
 const MagicBento = ({
   textAutoHide = true,
   enableStars = true,
@@ -500,7 +482,7 @@ const MagicBento = ({
 }) => {
   const gridRef = useRef(null);
   const navigate = useNavigate();
-  const isMobile = useMobileDetection();
+  const isMobile = useIsMobile();
   const shouldDisableAnimations = disableAnimations || isMobile;
 
   return (

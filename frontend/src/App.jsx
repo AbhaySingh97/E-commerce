@@ -11,6 +11,8 @@ import { AdminRoute, ProtectedRoute } from './components/routes/ProtectedRoute';
 import { PageLoader } from './components/common/PageState';
 import { useAuth } from './context/AuthContext';
 import { trackPageView } from './lib/analytics';
+import { useIsMobile } from './hooks/useIsMobile';
+import MobileApp from './mobile/MobileApp';
 
 const ProductsPage = lazy(() => import('./pages/ProductsPage'));
 const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'));
@@ -31,10 +33,7 @@ const WelcomeScreen = ({ onFinished }) => {
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
-    // Letters animate in at 0.1s–0.7s delays + 0.5s duration = last letter visible at ~1.3s
-    // Keep screen visible for 4.5s so user can enjoy the full animation
     const showTimer = setTimeout(() => setFadeOut(true), 4500);
-    // Give 800ms for the fade-out animation to complete before unmounting
     const finishTimer = setTimeout(onFinished, 5300);
     return () => {
       clearTimeout(showTimer);
@@ -80,21 +79,10 @@ const WelcomeScreen = ({ onFinished }) => {
   );
 };
 
-function App() {
-  // Show welcome screen only once per session
-  const [showWelcome, setShowWelcome] = useState(() => !sessionStorage.getItem('caryqel_visited'));
+const DesktopApp = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, loading } = useAuth();
-
-  const handleWelcomeFinished = () => {
-    sessionStorage.setItem('caryqel_visited', 'true');
-    setShowWelcome(false);
-  };
-
-  useEffect(() => {
-    trackPageView(location.pathname, { search: location.search });
-  }, [location.pathname, location.search]);
+  const { user } = useAuth();
 
   const dockItems = useMemo(() => {
     const items = [
@@ -111,10 +99,6 @@ function App() {
 
     return items;
   }, [navigate, user]);
-
-  if (showWelcome || loading) {
-    return <WelcomeScreen onFinished={handleWelcomeFinished} />;
-  }
 
   const hideDock = location.pathname.startsWith('/admin') || location.pathname === '/login' || location.pathname === '/checkout';
   const hideFooter = location.pathname.startsWith('/admin');
@@ -148,6 +132,28 @@ function App() {
       {!hideDock && <Dock items={dockItems} magnification={80} distance={150} />}
     </div>
   );
+};
+
+function App() {
+  const [showWelcome, setShowWelcome] = useState(() => !sessionStorage.getItem('caryqel_visited'));
+  const location = useLocation();
+  const { loading } = useAuth();
+  const isMobile = useIsMobile();
+
+  const handleWelcomeFinished = () => {
+    sessionStorage.setItem('caryqel_visited', 'true');
+    setShowWelcome(false);
+  };
+
+  useEffect(() => {
+    trackPageView(location.pathname, { search: location.search });
+  }, [location.pathname, location.search]);
+
+  if (showWelcome || loading) {
+    return <WelcomeScreen onFinished={handleWelcomeFinished} />;
+  }
+
+  return isMobile ? <MobileApp /> : <DesktopApp />;
 }
 
 export default App;
