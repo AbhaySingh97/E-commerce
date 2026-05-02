@@ -1,5 +1,7 @@
 import { useRef, useEffect, useCallback, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
+import { FiTruck, FiShield, FiLock, FiUserCheck, FiGlobe, FiHeadphones } from 'react-icons/fi';
 import './MagicBento.css';
 
 const DEFAULT_PARTICLE_COUNT = 12;
@@ -11,38 +13,51 @@ const cardData = [
   {
     color: '#0a0a0a',
     title: 'Luxe Delivery',
-    description: 'Priority dispatch within 2 hours of order.',
-    label: 'Priority'
+    description: 'Priority dispatch within 2 hours.',
+    label: 'Priority',
+    path: '/products',
+    icon: <FiTruck />
   },
   {
     color: '#0a0a0a',
     title: 'Verified Quality',
-    description: 'Every product is authenticated by our experts.',
-    label: 'Authentic'
+    description: 'Authenticated by our house experts.',
+    label: 'Authentic',
+    path: '/about',
+    icon: <FiShield />
   },
   {
     color: '#0a0a0a',
     title: 'Secure Checkout',
-    description: 'Bank-grade encryption for all transactions.',
-    label: 'Secure'
+    description: 'Experience peace of mind with our bank-grade multi-layer encryption. We support all major international cards, UPI, and premium financing options to ensure your transaction is as smooth as your shopping experience.',
+    label: 'Secure',
+    path: '/cart',
+    icon: <FiLock />,
+    extraFeatures: ['PCI-DSS Level 1', 'AES-256 Bit', '2FA Enabled']
   },
   {
     color: '#0a0a0a',
     title: 'Member Perks',
-    description: 'Exclusive early access to limited drops.',
-    label: 'Exclusive'
+    description: 'Join the Caryqel inner circle for early access to limited edition drops and member-only curated edits.',
+    label: 'Exclusive',
+    path: '/login',
+    icon: <FiUserCheck />
   },
   {
     color: '#0a0a0a',
     title: 'Global Curators',
-    description: 'Handpicked from the world\'s best brands.',
-    label: 'Curated'
+    description: 'Handpicked from the world\'s best.',
+    label: 'Curated',
+    path: '/categories',
+    icon: <FiGlobe />
   },
   {
     color: '#0a0a0a',
     title: '24/7 Concierge',
-    description: 'Premium support desk always available.',
-    label: 'Support'
+    description: 'Our support desk is always here.',
+    label: 'Support',
+    path: '/contact',
+    icon: <FiHeadphones />
   }
 ];
 
@@ -484,6 +499,7 @@ const MagicBento = ({
   enableMagnetism = true
 }) => {
   const gridRef = useRef(null);
+  const navigate = useNavigate();
   const isMobile = useMobileDetection();
   const shouldDisableAnimations = disableAnimations || isMobile;
 
@@ -506,9 +522,31 @@ const MagicBento = ({
             className: baseClassName,
             style: {
               backgroundColor: card.color,
-              '--glow-color': glowColor
-            }
+              '--glow-color': glowColor,
+              cursor: 'pointer'
+            },
+            onClick: () => card.path && navigate(card.path)
           };
+
+          const CardContent = () => (
+            <div className="magic-bento-card__inner">
+              <div className="magic-bento-card__header">
+                <div className="magic-bento-card__label">{card.label}</div>
+                <div className="magic-bento-card__icon">{card.icon}</div>
+              </div>
+              <div className="magic-bento-card__content">
+                <h2 className="magic-bento-card__title">{card.title}</h2>
+                <p className="magic-bento-card__description">{card.description}</p>
+                {card.extraFeatures && (
+                  <div className="magic-bento-card__extras">
+                    {card.extraFeatures.map((f, i) => (
+                      <span key={i}>{f}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          );
 
           if (enableStars) {
             return (
@@ -522,13 +560,7 @@ const MagicBento = ({
                 clickEffect={clickEffect}
                 enableMagnetism={enableMagnetism}
               >
-                <div className="magic-bento-card__header">
-                  <div className="magic-bento-card__label">{card.label}</div>
-                </div>
-                <div className="magic-bento-card__content">
-                  <h2 className="magic-bento-card__title">{card.title}</h2>
-                  <p className="magic-bento-card__description">{card.description}</p>
-                </div>
+                <CardContent />
               </ParticleCard>
             );
           }
@@ -645,13 +677,7 @@ const MagicBento = ({
                 el.addEventListener('click', handleClick);
               }}
             >
-              <div className="magic-bento-card__header">
-                <div className="magic-bento-card__label">{card.label}</div>
-              </div>
-              <div className="magic-bento-card__content">
-                <h2 className="magic-bento-card__title">{card.title}</h2>
-                <p className="magic-bento-card__description">{card.description}</p>
-              </div>
+              <CardContent />
             </div>
           );
         })}

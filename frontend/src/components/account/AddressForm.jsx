@@ -24,16 +24,21 @@ const AddressForm = ({
   const [form, setForm] = useState(emptyAddress);
 
   useEffect(() => {
+    if (!initialValues) return;
+    
+    // Only update if the values are actually different to prevent infinite loops
+    // if parent passes a new object reference on every render
     const nextForm = { ...emptyAddress, ...initialValues };
-    setForm(nextForm);
+    setForm((current) => {
+      const isDifferent = Object.keys(nextForm).some(key => current[key] !== nextForm[key]);
+      return isDifferent ? nextForm : current;
+    });
   }, [initialValues]);
 
   const updateField = (key, value) => {
-    setForm((current) => {
-      const nextForm = { ...current, [key]: value };
-      onChange?.(nextForm);
-      return nextForm;
-    });
+    const nextForm = { ...form, [key]: value };
+    setForm(nextForm);
+    onChange?.(nextForm);
   };
 
   const handleSubmit = (event) => {

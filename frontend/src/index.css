@@ -118,6 +118,284 @@ body {
   z-index: 9999;
 }
 
+/* --- Premium Mobile Responsiveness --- */
+@media (max-width: 1024px) {
+  .enterprise-hero-inner {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding: 0 5%;
+    gap: 4rem;
+  }
+
+  .hero-copy {
+    margin: 0 auto;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hero-actions {
+    justify-content: center;
+  }
+
+  .hero-trust-row {
+    justify-content: center;
+  }
+
+  .hero-product-stage {
+    max-width: 500px;
+    margin: 0 auto;
+    scale: 0.85; /* Scale down the whole stage */
+  }
+
+  .hero-floating-panel {
+    width: 110px;
+    padding: 0.6rem;
+  }
+
+  .hero-floating-panel strong {
+    font-size: 1.1rem;
+  }
+
+  .hero-floating-panel span {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-container {
+    padding: 0 1.25rem;
+  }
+
+  /* Product Card Scaling */
+  .showcase-product-card {
+    padding: 0.75rem;
+    border-radius: 20px;
+    height: auto;
+    aspect-ratio: 1 / 1.4; /* Lock the ratio to prevent squeezing */
+  }
+
+  .showcase-product-media {
+    aspect-ratio: 1 / 1.1;
+  }
+
+  .showcase-product-body {
+    padding: 0.5rem 0.25rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .showcase-product-body h3 {
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .price-stack strong {
+    font-size: 1rem;
+  }
+
+  /* Bento Card Scaling */
+  .magic-bento-card {
+    min-height: auto;
+    aspect-ratio: 4 / 3 !important; /* Force original ratio on mobile */
+    border-radius: 24px;
+  }
+
+  .magic-bento-card__inner {
+    padding: 1.5rem;
+  }
+
+  .magic-bento-card__title {
+    font-size: 1.2rem;
+  }
+
+  .magic-bento-card__icon {
+    font-size: 1.4rem;
+  }
+
+  .nav-panel {
+    display: none; /* Hide standard nav panel on mobile */
+  }
+
+  /* Adjust Page Padding for Mobile */
+  .page {
+    padding-top: 6rem;
+  }
+
+  .page.home.enterprise-home {
+    padding-bottom: 7rem; /* Space for Dock */
+  }
+
+  /* Section Headings */
+  .section-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-heading h2 {
+    font-size: 1.8rem;
+  }
+
+  .section-description {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  /* Grid Adjustments */
+  .showcase-product-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+    padding: 0 1rem !important;
+  }
+
+  .home-section {
+    padding: 3rem 0;
+  }
+
+  .category-spotlight-grid {
+    grid-template-columns: 1fr;
+    padding: 0 1.25rem;
+  }
+
+  /* Campaign Band */
+  .campaign-band {
+    flex-direction: column;
+    margin: 0 1.25rem;
+    border-radius: 24px;
+  }
+
+  .campaign-panel {
+    padding: 2rem;
+  }
+
+  /* Brand Marquee */
+  .brand-marquee {
+    padding: 1.25rem 0;
+  }
+
+  .brand-marquee-track span {
+    font-size: 1.2rem;
+    margin-right: 2rem;
+  }
+
+  /* Stats Scaling */
+  .hero-stat-strip {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-top: 3rem;
+  }
+
+  .stat-pill {
+    padding: 0.75rem;
+  }
+
+  .stat-pill strong {
+    font-size: 1.2rem;
+  }
+
+  .stat-pill span {
+    font-size: 0.7rem;
+  }
+
+  /* Best Seller Section */
+  .best-seller-layout {
+    grid-template-columns: 1fr;
+    padding: 0 1.25rem;
+  }
+
+  /* Catalog Grid Fix */
+  .catalog-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
+    gap: 1rem !important;
+    padding: 0 !important;
+  }
+
+  .product-card {
+    border-radius: 1.25rem;
+    height: auto;
+    aspect-ratio: 1 / 1.6;
+  }
+
+  .product-card .product-image-container {
+    height: auto;
+    aspect-ratio: 1 / 1.1;
+  }
+
+  .product-card .product-details {
+    padding: 0.75rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .product-card .product-details h3 {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .catalog-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .catalog-filters {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+
+  /* Welcome Screen Letters */
+  .welcome-letter {
+    font-size: 2.8rem;
+  }
+  
+  /* Feature Bento spacing */
+  .bento-features-section {
+    padding: 0 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome-letter {
+    font-size: 2.2rem;
+  }
+
+  .hero-copy h1,
+  .hero-title-animated {
+    font-size: 2.1rem;
+    line-height: 1.2;
+    min-height: calc(2.1rem * 1.2 * 2.5);
+    max-height: none; /* Allow natural wrap if needed on very small screens */
+    white-space: normal; /* Better wrap for tiny screens */
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 1rem;
+  }
+
+  .hero-actions .btn-primary,
+  .hero-actions .btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .showcase-product-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Welcome Screen */
+
 .welcome-magic-rings {
   position: absolute;
   inset: 0;
@@ -2238,14 +2516,17 @@ body {
 .hero-title-animated {
   margin-top: 0;
   font-family: 'Playfair Display', serif;
-  font-size: clamp(2.7rem, 5.6vw, 5.35rem);
-  line-height: 0.98;
+  font-size: clamp(2.3rem, 4.8vw, 4.5rem); /* Slightly smaller to ensure fit */
+  line-height: 1.15;
   color: #fff;
-  max-width: 640px;
-  overflow-wrap: anywhere;
-  text-wrap: balance;
-  min-height: calc(clamp(2.7rem, 5.6vw, 5.35rem) * 0.98 * 2); /* Reserve space for 2 lines */
-  display: block;
+  max-width: 920px; /* Increased to avoid accidental auto-wrapping */
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  min-height: calc(clamp(2.3rem, 4.8vw, 4.5rem) * 1.15 * 2); 
+  max-height: calc(clamp(2.3rem, 4.8vw, 4.5rem) * 1.15 * 2);
+  white-space: pre-wrap; /* Support \n and keep layout stable */
 }
 
 .hero-lede {
@@ -2430,6 +2711,11 @@ body {
   font-family: 'Playfair Display', serif;
   font-size: clamp(2.1rem, 4vw, 4rem);
   line-height: 1;
+}
+
+.bento-features-section .section-heading h2 {
+  font-size: clamp(1.8rem, 3.2vw, 3.2rem);
+  letter-spacing: -0.01em;
 }
 
 .section-description {
@@ -3452,6 +3738,13 @@ body {
     flex-direction: column;
     text-align: center;
     padding: 2rem;
+  }
+  
+  .user-badges {
+    justify-content: center;
+  }
+}
+2rem;
   }
   
   .user-badges {

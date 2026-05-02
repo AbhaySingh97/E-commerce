@@ -10,6 +10,10 @@ const ProductShowcaseCard = ({ product, index = 0, onAddToCart }) => {
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : null;
 
+  const productImage = product.images?.[0] && product.images[0].startsWith('http') 
+    ? product.images[0] 
+    : fallbackImage;
+
   return (
     <motion.article
       className="showcase-product-card"
@@ -26,7 +30,7 @@ const ProductShowcaseCard = ({ product, index = 0, onAddToCart }) => {
           </button>
         </Magnet>
         <img
-          src={product.images?.[0] || fallbackImage}
+          src={productImage}
           alt={product.name}
           onError={(event) => {
             event.currentTarget.src = fallbackImage;

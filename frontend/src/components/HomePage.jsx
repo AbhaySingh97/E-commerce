@@ -112,7 +112,7 @@ const HomePage = () => {
 
       <CategorySpotlight categories={categories} />
 
-      <section className="home-section bento-features-section">
+      <section id="edge" className="home-section bento-features-section">
         <SectionHeader
           eyebrow="The Caryqel Edge"
           title="Designed for high-intent, premium shopping"
@@ -133,20 +133,22 @@ const HomePage = () => {
       </section>
 
       {galleryItems.length > 0 && (
-        <section className="home-section gallery-section" style={{ height: '600px', width: '100%', position: 'relative', overflow: 'hidden', background: '#0a0a0a', padding: '0' }}>
-          <div style={{ position: 'absolute', top: '40px', left: '0', width: '100%', textAlign: 'center', zIndex: 10 }}>
-            <h2 style={{ color: '#fff', fontSize: '2.5rem', fontWeight: '300', letterSpacing: '0.05em', margin: 0, fontFamily: 'Outfit, sans-serif' }}>Curated Selections</h2>
-            <p style={{ color: 'rgba(255,255,255,0.6)', marginTop: '8px', fontSize: '1rem', fontWeight: '300' }}>Swipe to explore our featured collections</p>
+        <section className="home-section gallery-section" style={{ height: '750px', width: '100%', position: 'relative', overflow: 'hidden', background: '#0a0a0a', padding: '0' }}>
+          <div style={{ position: 'absolute', top: '60px', left: '0', width: '100%', textAlign: 'center', zIndex: 10 }}>
+            <h2 style={{ color: '#fff', fontSize: '3rem', fontWeight: '300', letterSpacing: '0.05em', margin: 0, fontFamily: 'Outfit, sans-serif' }}>Curated Selections</h2>
+            <p style={{ color: 'rgba(255,255,255,0.6)', marginTop: '12px', fontSize: '1.1rem', fontWeight: '300' }}>Swipe to explore our featured collections</p>
           </div>
-          <CircularGallery
-            items={galleryItems}
-            bend={3}
-            textColor="#ffffff"
-            borderRadius={0.05}
-            scrollEase={0.05}
-            scrollSpeed={1.5}
-            font="bold 24px Outfit, sans-serif"
-          />
+          <div style={{ position: 'absolute', inset: 0, paddingTop: '100px' }}>
+            <CircularGallery
+              items={galleryItems}
+              bend={3}
+              textColor="#ffffff"
+              borderRadius={0.05}
+              scrollEase={0.05}
+              scrollSpeed={1.5}
+              font="bold 24px Outfit, sans-serif"
+            />
+          </div>
         </section>
       )}
 

@@ -34,10 +34,10 @@ const EnterpriseHero = ({ featuredProduct }) => {
         >
           <TextType
             as="h1"
-            text={["Luxury shopping, built to convert.", "Caryqel: The future of commerce.", "Elegance in every single detail."]}
-            typingSpeed={100}
-            deletingSpeed={50}
-            pauseDuration={5000}
+            text={["Luxury shopping,\nbuilt to convert.", "Caryqel: The future\nof commerce.", "Elegance in every\nsingle detail."]}
+            typingSpeed={60}
+            deletingSpeed={30}
+            pauseDuration={4000}
             loop={true}
             className="hero-title-animated"
           />

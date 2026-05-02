@@ -98,6 +98,52 @@
   gap: 1rem;
 }
 
+/* --- Shell Mobile Refinements --- */
+@media (max-width: 768px) {
+  .page {
+    width: 100%;
+    padding: 6rem 1.25rem 5rem;
+  }
+
+  .surface-card,
+  .page-state-card,
+  .empty-state-card,
+  .auth-form-card,
+  .cart-summary-panel,
+  .checkout-summary {
+    padding: 1.25rem;
+    border-radius: 18px;
+  }
+
+  .page-hero {
+    padding: 1.25rem;
+    border-radius: 18px;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .page-hero h1 {
+    font-size: 2rem;
+    margin-top: 0.5rem;
+  }
+
+  .page-hero p {
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-state-badge {
+    font-size: 0.65rem;
+    padding: 0.35rem 0.6rem;
+  }
+
+  .page-hero h1 {
+    font-size: 2rem;
+  }
+}
+
 .row-actions {
   display: flex;
   flex-wrap: wrap;
@@ -182,6 +228,33 @@
   font-family: 'Playfair Display', serif;
   font-size: 1.8rem;
   font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.brand-word {
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.brand-primary {
+  color: #fff;
+}
+
+.brand-accent {
+  background: linear-gradient(135deg, #a78bfa, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-style: italic;
+  font-weight: 900;
+  padding-right: 0.1em; /* Prevents italic slant from clipping the 'l' */
+}
+
+.footer-wordmark {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.4rem;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
 }
 
 .nav-container {

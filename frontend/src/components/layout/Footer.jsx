@@ -7,7 +7,9 @@ const Footer = () => {
     <footer className="footer">
       <div className="footer-content">
         <div className="footer-brand">
-          <h2>caryqel</h2>
+          <h2 className="footer-wordmark">
+            <span className="brand-primary">cary</span><span className="brand-accent">qel</span>
+          </h2>
           <p>Premium storefront design backed by modern commerce workflows.</p>
         </div>
         <div className="footer-social-middle">
@@ -46,7 +48,7 @@ const Footer = () => {
         </div>
       </div>
       <div className="footer-bottom">
-        <p>© 2026 caryqel. Premium commerce, shipped with clarity.</p>
+        <p>© 2026 <strong style={{ color: '#fff', fontWeight: '600' }}>CARYQEL</strong>. Premium commerce, shipped with clarity.</p>
       </div>
     </footer>
   );
