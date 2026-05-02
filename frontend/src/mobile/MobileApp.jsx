@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from 'react';
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import { FiHome, FiSearch, FiShoppingBag, FiUser, FiHeart } from 'react-icons/fi';
+import { Routes, Route, useNavigate, useLocation, Link } from 'react-router-dom';
+import { Icon } from './components/MobileUI';
 import './styles/mobile.css';
 
 import MobileHomePage from './pages/MobileHomePage';
@@ -20,41 +20,39 @@ const MobileAuthPage = lazy(() => import('./pages/MobileAuthPage'));
 const MobileAboutPage = lazy(() => import('./pages/MobileAboutPage'));
 const MobileContactPage = lazy(() => import('./pages/MobileContactPage'));
 
-const MobileNavbar = () => {
-  const navigate = useNavigate();
+const BottomNav = () => {
   const location = useLocation();
-
-  const navItems = [
-    { icon: <FiHome size={24} />, path: '/' },
-    { icon: <FiSearch size={24} />, path: '/search' },
-    { icon: <FiShoppingBag size={24} />, path: '/products' },
-    { icon: <FiHeart size={24} />, path: '/wishlist' },
-    { icon: <FiUser size={24} />, path: '/profile' },
-  ];
+  const isActive = (path) => location.pathname === path;
 
   return (
     <nav className="mobile-bottom-nav">
-      {navItems.map((item) => {
-        const isActive = location.pathname === item.path;
-        return (
-          <div 
-            key={item.path}
-            className={`nav-item ${isActive ? 'active nav-item-active-circle' : ''}`} 
-            onClick={() => navigate(item.path)}
-          >
-            {item.icon}
-          </div>
-        );
-      })}
+      <Link to="/" className={`nav-link ${isActive('/') ? 'active' : ''}`}>
+        <Icon name="home" />
+      </Link>
+      <Link to="/search" className={`nav-link ${isActive('/search') ? 'active' : ''}`}>
+        <Icon name="search" />
+      </Link>
+      <Link to="/products" className={`nav-link ${isActive('/products') ? 'active' : ''}`}>
+        <Icon name="storefront" />
+      </Link>
+      <Link to="/wishlist" className={`nav-link ${isActive('/wishlist') ? 'active' : ''}`}>
+        <Icon name="favorite" />
+      </Link>
+      <Link to="/profile" className={`nav-link ${isActive('/profile') ? 'active' : ''}`}>
+        <Icon name="person" />
+      </Link>
     </nav>
   );
 };
 
 const MobileApp = () => {
+  const location = useLocation();
+  const hideNav = location.pathname.includes('/checkout') || location.pathname.includes('/login');
+
   return (
     <div className="mobile-app">
       <main className="mobile-main">
-        <Suspense fallback={<div className="mobile-loader">Caryqel</div>}>
+        <Suspense fallback={<div className="mobile-loader">CARYQEL</div>}>
           <Routes>
             <Route path="/" element={<MobileHomePage />} />
             <Route path="/products" element={<MobileProductsPage />} />
@@ -74,7 +72,7 @@ const MobileApp = () => {
           </Routes>
         </Suspense>
       </main>
-      <MobileNavbar />
+      {!hideNav && <BottomNav />}
     </div>
   );
 };

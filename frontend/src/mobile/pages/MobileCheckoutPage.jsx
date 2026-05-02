@@ -1,114 +1,105 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MobileHeader } from '../components/MobileUI';
-import { FiCheck, FiCreditCard, FiEye, FiLock, FiChevronRight } from 'react-icons/fi';
+import { TopAppBar, Icon } from '../components/MobileUI';
+import { useCart } from '../../context/CartContext';
 
 const MobileCheckoutPage = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState(1);
-
-  const steps = [
-    { id: 1, label: 'Shipping', icon: <FiCheck /> },
-    { id: 2, label: 'Payment', icon: <FiCreditCard /> },
-    { id: 3, label: 'Review', icon: <FiEye /> }
-  ];
+  const { cart, cartTotal } = useCart();
 
   return (
-    <div className="mobile-page">
-      <MobileHeader title="Checkout" />
+    <div className="mobile-page pb-32 bg-background">
+      <TopAppBar title="Checkout" />
       
-      <div className="mobile-page-content" style={{ padding: '24px' }}>
-        {/* Progress Stepper */}
-        <nav className="flex justify-between items-center" style={{ marginBottom: '48px', position: 'relative' }}>
-          <div style={{ position: 'absolute', top: '16px', left: 0, width: '100%', h: '1px', background: 'rgba(255,255
-,255,0.1)', zIndex: -1 }} />
-          {steps.map((s) => (
-            <div key={s.id} className="flex flex-col items-center gap-2">
-              <div 
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ring-4 ring-black ${step >= s.id ? 'gradient-button' : 'glass-panel text-white/40'}`}
-              >
-                {step > s.id ? <FiCheck /> : s.icon}
-              </div>
-              <span className="card-label" style={{ color: step >= s.id ? '#fff' : 'rgba(255,255,255,0.4)' }}>{s.label}</span>
+      <main className="mobile-content pt-8">
+        <nav className="flex justify-between items-center mb-12 relative px-2">
+          <div style={{ position: 'absolute', top: '50%', left: 0, width: '100%', height: '1px', background: 'rgba(2
+55,255,255,0.1)', zIndex: -1 }}></div>
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-8 h-8 rounded-full brand-gradient flex items-center justify-center text-white ring-4 ring-black">
+              <Icon name="check" style={{ fontSize: '14px' }} />
             </div>
-          ))}
+            <span className="card-label text-white">Shipping</span>
+          </div>
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-8 h-8 rounded-full brand-gradient flex items-center justify-center text-white ring-4 ring-black">
+              <Icon name="payments" style={{ fontSize: '14px' }} />
+            </div>
+            <span className="card-label text-white">Payment</span>
+          </div>
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-8 h-8 rounded-full glass-panel flex items-center justify-center text-white/40 ring-4 ring-black">
+              <Icon name="visibility" style={{ fontSize: '14px' }} />
+            </div>
+            <span className="card-label text-white/40">Review</span>
+          </div>
         </nav>
 
-        {step === 1 && (
-          <div className="space-y-6">
-            <h2 className="hero-title" style={{ fontSize: '24px', fontStyle: 'normal' }}>Shipping Details</h2>
-            <form className="space-y-6">
-              <div className="auth-input-group">
-                <label>Full Name</label>
-                <input type="text" placeholder="ALEXANDER VANCE" style={{ textTransform: 'uppercase', letterSpacing: '0.1em' }} />
-              </div>
-              <div className="auth-input-group">
-                <label>Shipping Address</label>
-                <input type="text" placeholder="STREET, APARTMENT, ETC." />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="auth-input-group">
-                  <label>City</label>
-                  <input type="text" placeholder="NEW YORK" />
+        <section style={{ marginBottom: '48px' }}>
+          <h2 className="hero-title" style={{ fontSize: '24px', fontStyle: 'normal', color: '#fff', marginBottom: '24px' }}>The Bag</h2>
+          <div className="space-y-4">
+            {cart.items.map((item) => (
+              <div key={item.product._id} className="glass-panel p-4 rounded-xl flex gap-4">
+                <div className="w-24 h-32 rounded-lg overflow-hidden flex-shrink-0">
+                  <img className="w-full h-full object-cover" src={item.product.images[0]} alt={item.product.name}/>
                 </div>
-                <div className="auth-input-group">
-                  <label>Postal Code</label>
-                  <input type="text" placeholder="10001" />
+                <div className="flex flex-col justify-between py-1 flex-grow">
+                  <div>
+                    <h3 className="card-title" style={{ fontSize: '18px' }}>{item.product.name}</h3>
+                    <p className="card-label mt-1">{item.product.brand || 'Onyx / Violet'}</p>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="card-price">₹{item.product.price.toLocaleString()}</span>
+                    <div className="flex items-center gap-4 bg-white/5 rounded-full px-3 py-1 border border-white/10">
+                      <Icon name="remove" style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)' }} />
+                      <span className="card-label text-white">{item.quantity}</span>
+                      <Icon name="add" style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)' }} />
+                    </div>
+                  </div>
                 </div>
               </div>
-              <button 
-                type="button" 
-                className="w-full h-14 gradient-button rounded-xl font-bold flex items-center justify-center gap-2"
-                onClick={() => setStep(2)}
-              >
-                Continue to Payment <FiChevronRight />
-              </button>
-            </form>
+            ))}
           </div>
-        )}
+        </section>
 
-        {step === 2 && (
-          <div className="space-y-6">
-            <h2 className="hero-title" style={{ fontSize: '24px', fontStyle: 'normal' }}>Payment Method</h2>
-            <form className="space-y-6">
-              <div className="auth-input-group">
-                <label>Cardholder Name</label>
-                <input type="text" placeholder="ALEXANDER VANCE" style={{ textTransform: 'uppercase' }} />
+        <section style={{ marginBottom: '48px' }}>
+          <h2 className="hero-title" style={{ fontSize: '24px', fontStyle: 'normal', color: '#fff', marginBottom: '24px' }}>Payment Method</h2>
+          <form className="space-y-6">
+            <div className="space-y-1">
+              <label className="card-label text-white/60 ml-1">Cardholder Name</label>
+              <input className="w-full h-14 bg-surface-container-low border border-white/10 rounded-xl px-4 text-white focus:outline-none focus:border-primary/40 transition-all uppercase tracking-widest" placeholder="ALEXANDER VANCE" type="text"/>
+            </div>
+            <div className="space-y-1">
+              <label className="card-label text-white/60 ml-1">Card Number</label>
+              <div className="relative" style={{ position: 'relative' }}>
+                <input className="w-full h-14 bg-surface-container-low border border-white/10 rounded-xl px-4 pr-12 text-white focus:outline-none focus:border-primary/40 transition-all tracking-[0.2em]" placeholder="0000 0000 0000 0000" type="text"/>
+                <Icon name="credit_card" style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', opacity: 0.4 }} />
               </div>
-              <div className="auth-input-group">
-                <label>Card Number</label>
-                <div style={{ position: 'relative' }}>
-                  <input type="text" placeholder="0000 0000 0000 0000" style={{ letterSpacing: '0.2em' }} />
-                  <FiCreditCard style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', opacity: 0.4 }} />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="auth-input-group">
-                  <label>Expiry Date</label>
-                  <input type="text" placeholder="MM/YY" />
-                </div>
-                <div className="auth-input-group">
-                  <label>CVV</label>
-                  <input type="text" placeholder="000" />
-                </div>
-              </div>
-              <div className="glass-panel" style={{ padding: '16px', borderRadius: '12px', display: 'flex', gap: '12px'
-, alignItems: 'center' }}>
-                <input type="checkbox" id="save-card" style={{ width: '20px', height: '20px' }} />
-                <label htmlFor="save-card" style={{ fontSize: '14px', opacity: 0.6 }}>Save details for future purchase
-s</label>
-              </div>
-              <button 
-                type="button" 
-                className="w-full h-16 gradient-button rounded-xl font-bold flex items-center justify-center gap-3"
-                onClick={() => navigate('/')}
-              >
-                Complete Purchase <FiLock />
-              </button>
-            </form>
+            </div>
+          </form>
+        </section>
+
+        <section className="glass-panel p-6 rounded-2xl" style={{ marginBottom: '48px' }}>
+          <div className="space-y-3 mb-6">
+            <div className="flex justify-between items-center">
+              <span style={{ color: 'rgba(255,255,255,0.6)' }}>Subtotal</span>
+              <span style={{ color: '#fff' }}>₹{cartTotal.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span style={{ color: 'rgba(255,255,255,0.6)' }}>Shipping</span>
+              <span className="card-label text-primary">COMPLIMENTARY</span>
+            </div>
+            <div className="pt-3 border-t border-white/10 flex justify-between items-center">
+              <span className="hero-title" style={{ fontSize: '24px', fontStyle: 'normal', color: '#fff' }}>Total</span>
+              <span className="hero-title" style={{ fontSize: '24px', fontStyle: 'normal', color: '#fff' }}>₹{cartTotal.toLocaleString()}</span>
+            </div>
           </div>
-        )}
-      </div>
+          <button onClick={() => navigate('/')} className="w-full h-16 brand-gradient rounded-xl font-bold text-white flex items-center justify-center gap-3 shadow-lg shadow-violet-500/20 active:scale-[0.98] transition-transform">
+            Complete Purchase
+            <Icon name="lock" />
+          </button>
+        </section>
+      </main>
     </div>
   );
 };

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiSearch, FiChevronLeft, FiX } from 'react-icons/fi';
-import { MobileProductCard } from '../components/MobileUI';
+import { TopAppBar, ProductItem, Icon } from '../components/MobileUI';
 import { mockProducts } from '../../data/mockData';
 
 const MobileSearchPage = () => {
@@ -14,7 +13,7 @@ const MobileSearchPage = () => {
     if (val.length > 2) {
       const filtered = mockProducts.filter(p => 
         p.name.toLowerCase().includes(val.toLowerCase()) || 
-        p.brand.toLowerCase().includes(val.toLowerCase())
+        p.brand?.toLowerCase().includes(val.toLowerCase())
       );
       setResults(filtered);
     } else {
@@ -23,51 +22,60 @@ const MobileSearchPage = () => {
   };
 
   return (
-    <div className="mobile-page">
-      {/* Custom Search Header */}
-      <header className="mobile-top-bar" style={{ height: '80px' }}>
-        <button className="top-bar-action" onClick={() => navigate(-1)}>
-          <FiChevronLeft size={24} />
-        </button>
-        <div className="search-input-group" style={{ flex: 1, margin: '0 12px' }}>
-          <FiSearch className="search-input-icon" size={20} />
-          <input 
-            className="stitch-search-input" 
-            placeholder="Search the collection..." 
-            value={query}
-            onChange={(e) => handleSearch(e.target.value)}
-            autoFocus
-          />
-          {query && <FiX style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', opacity: 0.4 }} onClick={() => handleSearch('')} />}
-        </div>
-      </header>
-
-      <div className="mobile-page-content" style={{ padding: '24px' }}>
-        {query.length === 0 ? (
-          <div>
-            <p className="card-label" style={{ marginBottom: '16px' }}>Popular Searches</p>
-            <div className="flex flex-wrap gap-2">
-              {['Oversized Blazers', 'Tech Kits', 'Minimalist Watches'].map(tag => (
-                <span key={tag} className="cat-pill" onClick={() => handleSearch(tag)}>{tag}</span>
-              ))}
+    <div className="mobile-page pb-32">
+      <TopAppBar title="Search" />
+      
+      <main className="mobile-content pt-8">
+        <section style={{ marginBottom: '48px' }}>
+          <div className="relative group" style={{ position: 'relative' }}>
+            <div style={{ position: 'absolute', insetY: 0, left: '16px', display: 'flex', alignItems: 'center', poi
+nterEvents: 'none', height: '100%' }}>
+              <Icon name="search" style={{ color: 'rgba(255,255,255,0.4)' }} />
             </div>
+            <input 
+              className="w-full h-14 bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 text-white focus:outline-none focus:border-primary/40 focus:bg-white/10 transition-all" 
+              placeholder="Search the collection..." 
+              type="text"
+              value={query}
+              onChange={(e) => handleSearch(e.target.value)}
+              autoFocus
+            />
           </div>
-        ) : (
-          <div>
-            {results.length > 0 ? (
-              <div className="stitch-grid">
-                {results.map(product => (
-                  <MobileProductCard key={product._id} product={product} />
+          
+          {query.length === 0 && (
+            <div className="mt-6">
+              <p className="card-label mb-4">Popular Searches</p>
+              <div className="flex flex-wrap gap-2">
+                {['Oversized Blazers', 'Tech Kits', 'Minimalist Watches'].map(tag => (
+                  <span 
+                    key={tag} 
+                    className="px-4 py-2 rounded-full glass-panel text-[12px] font-semibold text-white/80 hover:border-primary/40 cursor-pointer transition-colors"
+                    onClick={() => handleSearch(tag)}
+                  >
+                    {tag}
+                  </span>
                 ))}
               </div>
-            ) : (
-              <div style={{ textAlign: 'center', marginTop: '80px', opacity: 0.4 }}>
-                <p>No results found for "{query}"</p>
-              </div>
-            )}
+            </div>
+          )}
+        </section>
+        
+        <section className="masonry-grid">
+          {results.map((product, idx) => (
+            <ProductItem 
+              key={product._id} 
+              product={product} 
+              trans={idx % 2 !== 0}
+            />
+          ))}
+        </section>
+
+        {query.length > 2 && results.length === 0 && (
+          <div style={{ textAlign: 'center', marginTop: '80px', opacity: 0.4 }}>
+            <p>No results found for "{query}"</p>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 };
