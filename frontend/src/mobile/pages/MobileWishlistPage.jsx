@@ -6,18 +6,23 @@ const MobileWishlistPage = () => {
   const wishlistItems = mockProducts.slice(0, 3); // Mocking saved items
 
   return (
-    <div className="mobile-page">
+    <div className="mobile-page pb-32">
       <TopAppBar title="Wishlist" showBack={true} />
       
-      <div className="mobile-page-content" style={{ padding: '24px' }}>
+      <main className="mobile-content pt-8">
         <div className="mobile-section-header">
-          <span className="card-label">{wishlistItems.length} Objects saved</span>
+          <h2 className="hero-title" style={{ fontSize: '24px', fontStyle: 'normal' }}>Saved Objects</h2>
+          <span className="card-label" style={{ opacity: 0.4 }}>{wishlistItems.length} items</span>
         </div>
 
         {wishlistItems.length > 0 ? (
-          <div className="stitch-grid">
-            {wishlistItems.map(product => (
-              <ProductItem key={product._id} product={product} />
+          <div className="masonry-grid">
+            {wishlistItems.map((product, idx) => (
+              <ProductItem 
+                key={product._id} 
+                product={product} 
+                trans={idx % 2 !== 0}
+              />
             ))}
           </div>
         ) : (

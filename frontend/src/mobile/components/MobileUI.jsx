@@ -15,19 +15,19 @@ export const TopAppBar = ({ showBack = true, title = "Caryqel" }) => {
   const navigate = useNavigate();
   return (
     <header className="mobile-top-header">
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         {showBack && (
           <button 
-            className="top-bar-action"
+            className="top-bar-btn"
             onClick={() => navigate(-1)}
           >
-            <Icon name="arrow_back" style={{ color: 'rgba(255,255,255,0.6)' }} />
+            <Icon name="arrow_back" style={{ fontSize: '22px' }} />
           </button>
         )}
-        <h1>{title}</h1>
+        <h1 className="top-bar-title">{title}</h1>
       </div>
-      <button className="top-bar-action" onClick={() => navigate('/cart')}>
-        <Icon name="shopping_bag" style={{ color: '#fff' }} />
+      <button className="top-bar-btn bag-btn" onClick={() => navigate('/cart')}>
+        <Icon name="shopping_bag" style={{ fontSize: '22px' }} />
       </button>
     </header>
   );

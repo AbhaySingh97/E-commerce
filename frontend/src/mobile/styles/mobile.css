@@ -98,17 +98,61 @@
   width: 100%;
 }
 
-.mobile-top-header h1 {
+.top-bar-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.top-bar-btn:active {
+  transform: scale(0.9);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.bag-btn {
+  color: #fff;
+  position: relative;
+}
+
+.top-bar-title {
   font-family: var(--font-display);
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+  letter-spacing: 0.1em;
   color: #fff;
   margin: 0;
 }
 
-/* Bottom Navigation Overlay */
+/* Grids */
+.masonry-grid, .stitch-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 16px !important;
+  width: 100% !important;
+}
+
+/* Item Color Correction */
+.card-price {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary) !important; /* Ensure consistent color */
+}
+
+.card-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.4) !important;
+  font-weight: 700;
+}
 .mobile-bottom-nav {
   position: fixed;
   bottom: 0;
