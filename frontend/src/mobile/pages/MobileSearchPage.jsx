@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { MobileHeader, MobileProductCard } from '../components/MobileUI';
-import { FiSearch, FiX } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
+import { FiSearch, FiChevronLeft, FiX } from 'react-icons/fi';
+import { MobileProductCard } from '../components/MobileUI';
 import { mockProducts } from '../../data/mockData';
 
 const MobileSearchPage = () => {
+  const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
 
@@ -22,42 +24,47 @@ const MobileSearchPage = () => {
 
   return (
     <div className="mobile-page">
-      <div className="mobile-search-header">
-        <div className="search-input-wrapper">
-          <FiSearch className="search-icon" />
+      {/* Custom Search Header */}
+      <header className="mobile-top-bar" style={{ height: '80px' }}>
+        <button className="top-bar-action" onClick={() => navigate(-1)}>
+          <FiChevronLeft size={24} />
+        </button>
+        <div className="search-input-group" style={{ flex: 1, margin: '0 12px' }}>
+          <FiSearch className="search-input-icon" size={20} />
           <input 
-            type="text" 
-            placeholder="Search products, brands..." 
+            className="stitch-search-input" 
+            placeholder="Search the collection..." 
             value={query}
             onChange={(e) => handleSearch(e.target.value)}
             autoFocus
           />
-          {query && <FiX className="clear-icon" onClick={() => handleSearch('')} />}
+          {query && <FiX style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', opacity: 0.4 }} onClick={() => handleSearch('')} />}
         </div>
-        <button className="cancel-btn" onClick={() => window.history.back()}>Cancel</button>
-      </div>
+      </header>
 
-      <div className="mobile-page-content">
-        {query.length > 0 ? (
-          results.length > 0 ? (
-            <div className="mobile-product-grid">
-              {results.map(product => (
-                <MobileProductCard key={product._id} product={product} />
+      <div className="mobile-page-content" style={{ padding: '24px' }}>
+        {query.length === 0 ? (
+          <div>
+            <p className="card-label" style={{ marginBottom: '16px' }}>Popular Searches</p>
+            <div className="flex flex-wrap gap-2">
+              {['Oversized Blazers', 'Tech Kits', 'Minimalist Watches'].map(tag => (
+                <span key={tag} className="cat-pill" onClick={() => handleSearch(tag)}>{tag}</span>
               ))}
             </div>
-          ) : (
-            <div className="empty-results">
-              <p>No results found for "{query}"</p>
-            </div>
-          )
+          </div>
         ) : (
-          <div className="search-suggestions">
-            <h3>Popular Searches</h3>
-            <div className="suggestion-tags">
-              {['Headphones', 'MacBook', 'Analog', 'Lamps'].map(tag => (
-                <span key={tag} onClick={() => handleSearch(tag)}>{tag}</span>
-              ))}
-            </div>
+          <div>
+            {results.length > 0 ? (
+              <div className="stitch-grid">
+                {results.map(product => (
+                  <MobileProductCard key={product._id} product={product} />
+                ))}
+              </div>
+            ) : (
+              <div style={{ textAlign: 'center', marginTop: '80px', opacity: 0.4 }}>
+                <p>No results found for "{query}"</p>
+              </div>
+            )}
           </div>
         )}
       </div>

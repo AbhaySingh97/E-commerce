@@ -25,25 +25,27 @@ const MobileNavbar = () => {
   const location = useLocation();
 
   const navItems = [
-    { icon: <FiHome size={24} />, label: 'Home', path: '/' },
-    { icon: <FiSearch size={24} />, label: 'Search', path: '/search' },
-    { icon: <FiShoppingBag size={24} />, label: 'Shop', path: '/products' },
-    { icon: <FiHeart size={24} />, label: 'Wishlist', path: '/wishlist' },
-    { icon: <FiUser size={24} />, label: 'Profile', path: '/profile' },
+    { icon: <FiHome size={24} />, path: '/' },
+    { icon: <FiSearch size={24} />, path: '/search' },
+    { icon: <FiShoppingBag size={24} />, path: '/products' },
+    { icon: <FiHeart size={24} />, path: '/wishlist' },
+    { icon: <FiUser size={24} />, path: '/profile' },
   ];
 
   return (
-    <nav className="mobile-nav">
-      {navItems.map((item) => (
-        <div 
-          key={item.path}
-          className={`mobile-nav-item ${location.pathname === item.path ? 'active' : ''}`} 
-          onClick={() => navigate(item.path)}
-        >
-          {item.icon}
-          <span>{item.label}</span>
-        </div>
-      ))}
+    <nav className="mobile-bottom-nav">
+      {navItems.map((item) => {
+        const isActive = location.pathname === item.path;
+        return (
+          <div 
+            key={item.path}
+            className={`nav-item ${isActive ? 'active nav-item-active-circle' : ''}`} 
+            onClick={() => navigate(item.path)}
+          >
+            {item.icon}
+          </div>
+        );
+      })}
     </nav>
   );
 };

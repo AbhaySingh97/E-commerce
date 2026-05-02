@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { MobileHeader, MobileProductCard } from '../components/MobileUI';
+import { MobileHeader, MobileProductCard, CategoryPill } from '../components/MobileUI';
 import { mockProducts } from '../../data/mockData';
-import { FiFilter, FiChevronDown } from 'react-icons/fi';
+import { FiFilter } from 'react-icons/fi';
 
 const MobileProductsPage = () => {
   const [activeFilter, setActiveFilter] = useState('All');
@@ -13,34 +13,28 @@ const MobileProductsPage = () => {
 
   return (
     <div className="mobile-page">
-      <MobileHeader title="Shop" showBack={false} />
+      <MobileHeader title="Shop" showBack={true} />
       
-      <div className="mobile-page-content">
-        <div className="mobile-filter-bar">
-          <div className="filter-scroll">
-            {categories.map(cat => (
-              <button 
-                key={cat} 
-                className={`filter-pill ${activeFilter === cat ? 'active' : ''}`}
-                onClick={() => setActiveFilter(cat)}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-          <button className="filter-trigger">
-            <FiFilter size={18} />
+      <div className="mobile-page-content" style={{ padding: '24px' }}>
+        <div className="category-scroller" style={{ marginBottom: '32px' }}>
+          {categories.map(cat => (
+            <CategoryPill 
+              key={cat} 
+              name={cat} 
+              active={activeFilter === cat}
+              onClick={() => setActiveFilter(cat)}
+            />
+          ))}
+        </div>
+
+        <div className="mobile-section-header">
+          <span className="card-label">{filteredProducts.length} Objects found</span>
+          <button className="top-bar-action" style={{ padding: 0 }}>
+            <FiFilter size={20} />
           </button>
         </div>
 
-        <div className="mobile-results-header">
-          <span>{filteredProducts.length} items found</span>
-          <button className="sort-trigger">
-            Sort by: Newest <FiChevronDown />
-          </button>
-        </div>
-
-        <div className="mobile-product-grid">
+        <div className="stitch-grid">
           {filteredProducts.map(product => (
             <MobileProductCard key={product._id} product={product} />
           ))}
