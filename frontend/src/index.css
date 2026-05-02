@@ -118,6 +118,12 @@ body {
   z-index: 9999;
 }
 
+.splash-active {
+  overflow: hidden !important;
+  height: 100vh;
+  pointer-events: none;
+}
+
 /* --- Premium Mobile Responsiveness --- */
 @media (max-width: 1024px) {
   .enterprise-hero-inner {

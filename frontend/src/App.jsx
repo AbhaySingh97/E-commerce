@@ -33,10 +33,9 @@ const WelcomeScreen = ({ onFinished }) => {
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
-    // Show screen for 2.2s then start fade out
-    const showTimer = setTimeout(() => setFadeOut(true), 2200);
-    // Finish after 2.8s total
-    const finishTimer = setTimeout(onFinished, 2800);
+    // Reverted to original premium duration
+    const showTimer = setTimeout(() => setFadeOut(true), 4500);
+    const finishTimer = setTimeout(onFinished, 5300);
     return () => {
       clearTimeout(showTimer);
       clearTimeout(finishTimer);
@@ -151,11 +150,21 @@ function App() {
     trackPageView(location.pathname, { search: location.search });
   }, [location.pathname, location.search]);
 
-  if (showWelcome || loading) {
-    return <WelcomeScreen onFinished={handleWelcomeFinished} />;
-  }
+  // We always show the welcome screen if showWelcome is true or if auth is still loading
+  // but we render the main app content in parallel once auth is ready.
+  const isSplashActive = showWelcome || loading;
 
-  return isMobile ? <MobileApp /> : <DesktopApp />;
+  return (
+    <div className={`app-container ${isSplashActive ? 'splash-active' : ''}`}>
+      {isSplashActive && (
+        <WelcomeScreen onFinished={handleWelcomeFinished} />
+      )}
+      
+      {!loading && (
+        isMobile ? <MobileApp /> : <DesktopApp />
+      )}
+    </div>
+  );
 }
 
 export default App;
