@@ -1,10 +1,10 @@
 import React from 'react';
-import { MobileHeader } from '../components/MobileUI';
+import { TopAppBar } from '../components/MobileUI';
 
 const MobileAboutPage = () => {
   return (
     <div className="mobile-page">
-      <MobileHeader title="About Caryqel" />
+      <TopAppBar title="About Caryqel" />
       
       <div className="mobile-page-content">
         <section className="about-hero">

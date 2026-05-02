@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FiMail, FiPhone, FiMessageCircle, FiMapPin, FiSend } from 'react-icons/fi';
-import { MobileHeader } from '../components/MobileUI';
+import { TopAppBar } from '../components/MobileUI';
 
 const MobileContactPage = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -19,7 +19,7 @@ const MobileContactPage = () => {
 
   return (
     <div className="mobile-page">
-      <MobileHeader title="Contact Us" />
+      <TopAppBar title="Contact Us" />
       
       <div className="mobile-page-content">
         <div className="contact-intro">

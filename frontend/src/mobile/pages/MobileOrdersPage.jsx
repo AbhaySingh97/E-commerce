@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiPackage, FiChevronRight, FiClock } from 'react-icons/fi';
-import { MobileHeader } from '../components/MobileUI';
+import { TopAppBar } from '../components/MobileUI';
 
 const MobileOrdersPage = () => {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ const MobileOrdersPage = () => {
 
   return (
     <div className="mobile-page">
-      <MobileHeader title="My Orders" />
+      <TopAppBar title="My Orders" />
       
       <div className="mobile-page-content">
         <div className="order-filters">

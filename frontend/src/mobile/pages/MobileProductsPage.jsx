@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { TopAppBar, ProductItem, CategoryPill } from '../components/MobileUI';
 import { mockProducts } from '../../data/mockData';
 
 const MobileProductsPage = () => {
-  const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState('All');
   
   const categories = ['All', 'Electronics', 'Fashion', 'Home Decor', 'Accessories'];

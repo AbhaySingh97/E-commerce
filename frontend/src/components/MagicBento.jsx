@@ -1,10 +1,13 @@
+import { useRef, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { gsap } from 'gsap';
+import { FiTruck, FiShield, FiLock, FiUserCheck, FiGlobe, FiHeadphones } from 'react-icons/fi';
 import { useIsMobile } from '../hooks/useIsMobile';
 import './MagicBento.css';
 
 const DEFAULT_PARTICLE_COUNT = 12;
 const DEFAULT_SPOTLIGHT_RADIUS = 300;
 const DEFAULT_GLOW_COLOR = '99, 102, 241'; // Caryqel Indigo
-const MOBILE_BREAKPOINT = 768;
 
 const cardData = [
   {

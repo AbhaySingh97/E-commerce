@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { Routes, Route, useNavigate, useLocation, Link } from 'react-router-dom';
+import { Routes, Route, useLocation, Link } from 'react-router-dom';
 import { Icon } from './components/MobileUI';
 import './styles/mobile.css';
 

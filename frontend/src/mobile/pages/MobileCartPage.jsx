@@ -1,27 +1,25 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MobileHeader } from '../components/MobileUI';
+import { TopAppBar } from '../components/MobileUI';
 import { useCart } from '../../context/CartContext';
-import { FiMinus, FiPlus, FiTrash2, FiShield, FiLock } from 'react-icons/fi';
+import { FiMinus, FiPlus, FiLock, FiShield } from 'react-icons/fi';
 
 const MobileCartPage = () => {
   const navigate = useNavigate();
-  const { cart, removeFromCart, updateQuantity, cartTotal } = useCart();
+  const { cart, updateQuantity, cartTotal } = useCart();
 
   return (
-    <div className="mobile-page">
-      <MobileHeader title="The Bag" showCart={false} />
+    <div className="mobile-page pb-32 bg-background">
+      <TopAppBar title="The Bag" showCart={false} />
       
       <div className="mobile-page-content" style={{ padding: '24px' }}>
         {cart.items.length > 0 ? (
           <>
             <div className="space-y-4" style={{ marginBottom: '48px' }}>
               {cart.items.map((item) => (
-                <div key={item.product._id} className="glass-panel" style={{ padding: '16px', borderRadius: '12px', di
-splay: 'flex', gap: '16px' }}>
+                <div key={item.product._id} className="glass-panel" style={{ padding: '16px', borderRadius: '12px', display: 'flex', gap: '16px' }}>
                   <div style={{ width: '96px', height: '128px', borderRadius: '8px', overflow: 'hidden' }}>
-                    <img src={item.product.images[0]} alt={item.product.name} style={{ width: '100%', height: '100%', o
-bjectFit: 'cover' }} />
+                    <img src={item.product.images[0]} alt={item.product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
                   <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                     <div>
@@ -31,11 +29,9 @@ bjectFit: 'cover' }} />
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span className="card-price">₹{item.product.price.toLocaleString()}</span>
                       <div className="flex items-center gap-4 bg-white/5 rounded-full px-3 py-1 border border-white/10">
-                        <button className="qty-btn" onClick={() => updateQuantity(item.product._id, item.quantity - 1)}
-><FiMinus size={12} /></button>
+                        <button className="qty-btn" onClick={() => updateQuantity(item.product._id, item.quantity - 1)}><FiMinus size={12} /></button>
                         <span className="card-label" style={{ color: '#fff' }}>{item.quantity}</span>
-                        <button className="qty-btn" onClick={() => updateQuantity(item.product._id, item.quantity + 1)}
-><FiPlus size={12} /></button>
+                        <button className="qty-btn" onClick={() => updateQuantity(item.product._id, item.quantity + 1)}><FiPlus size={12} /></button>
                       </div>
                     </div>
                   </div>
@@ -51,10 +47,9 @@ bjectFit: 'cover' }} />
                 </div>
                 <div className="flex justify-between" style={{ marginBottom: '12px' }}>
                   <span style={{ opacity: 0.6 }}>Shipping</span>
-                  <span className="card-label" style={{ color: 'var(--mobile-primary)' }}>COMPLIMENTARY</span>
+                  <span className="card-label" style={{ color: 'var(--primary)' }}>COMPLIMENTARY</span>
                 </div>
-                <div style={{ paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', justi
-fyContent: 'space-between' }}>
+                <div style={{ paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between' }}>
                   <span className="hero-title" style={{ fontSize: '24px', fontStyle: 'normal' }}>Total</span>
                   <span className="hero-title" style={{ fontSize: '24px', fontStyle: 'normal' }}>₹{cartTotal.toLocaleString()}</span>
                 </div>

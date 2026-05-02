@@ -1,5 +1,5 @@
 import React from 'react';
-import { MobileHeader } from '../components/MobileUI';
+import { TopAppBar } from '../components/MobileUI';
 import { useNavigate } from 'react-router-dom';
 
 const MobileCategoriesPage = () => {
@@ -15,7 +15,7 @@ const MobileCategoriesPage = () => {
 
   return (
     <div className="mobile-page">
-      <MobileHeader title="Categories" showBack={false} />
+      <TopAppBar title="Categories" showBack={false} />
       
       <div className="mobile-page-content">
         <div className="category-list">

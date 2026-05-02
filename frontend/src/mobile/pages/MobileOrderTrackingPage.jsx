@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { FiPackage, FiTruck, FiCheckCircle, FiMapPin, FiPhone } from 'react-icons/fi';
-import { MobileHeader } from '../components/MobileUI';
+import { TopAppBar } from '../components/MobileUI';
 
 const MobileOrderTrackingPage = () => {
   const { id } = useParams();
@@ -16,7 +16,7 @@ const MobileOrderTrackingPage = () => {
 
   return (
     <div className="mobile-page">
-      <MobileHeader title={`Track ${id}`} />
+      <TopAppBar title={`Track ${id}`} />
       
       <div className="mobile-page-content">
         <div className="tracking-hero">

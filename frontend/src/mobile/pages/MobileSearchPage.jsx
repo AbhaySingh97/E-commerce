@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { TopAppBar, ProductItem, Icon } from '../components/MobileUI';
 import { mockProducts } from '../../data/mockData';
 
 const MobileSearchPage = () => {
-  const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
 
@@ -28,8 +26,7 @@ const MobileSearchPage = () => {
       <main className="mobile-content pt-8">
         <section style={{ marginBottom: '48px' }}>
           <div className="relative group" style={{ position: 'relative' }}>
-            <div style={{ position: 'absolute', insetY: 0, left: '16px', display: 'flex', alignItems: 'center', poi
-nterEvents: 'none', height: '100%' }}>
+            <div style={{ position: 'absolute', top: 0, bottom: 0, left: '16px', display: 'flex', alignItems: 'center', pointerEvents: 'none' }}>
               <Icon name="search" style={{ color: 'rgba(255,255,255,0.4)' }} />
             </div>
             <input 

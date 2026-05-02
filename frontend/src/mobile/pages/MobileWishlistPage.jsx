@@ -1,5 +1,5 @@
 import React from 'react';
-import { MobileHeader, MobileProductCard } from '../components/MobileUI';
+import { TopAppBar, ProductItem } from '../components/MobileUI';
 import { mockProducts } from '../../data/mockData';
 
 const MobileWishlistPage = () => {
@@ -7,7 +7,7 @@ const MobileWishlistPage = () => {
 
   return (
     <div className="mobile-page">
-      <MobileHeader title="Wishlist" showBack={true} />
+      <TopAppBar title="Wishlist" showBack={true} />
       
       <div className="mobile-page-content" style={{ padding: '24px' }}>
         <div className="mobile-section-header">
@@ -17,7 +17,7 @@ const MobileWishlistPage = () => {
         {wishlistItems.length > 0 ? (
           <div className="stitch-grid">
             {wishlistItems.map(product => (
-              <MobileProductCard key={product._id} product={product} />
+              <ProductItem key={product._id} product={product} />
             ))}
           </div>
         ) : (

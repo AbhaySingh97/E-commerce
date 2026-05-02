@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { TopAppBar, Icon } from '../components/MobileUI';
 import { mockProducts } from '../../data/mockData';
@@ -7,7 +7,7 @@ const MobileProductDetailPage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const product = mockProducts.find(p => p.slug === slug);
-  const [activeImg, setActiveImg] = useState(0);
+  const activeImg = 0; // Using 0 as fixed for now to match prototype logic
 
   if (!product) return <div className="mobile-loader">Product not found</div>;
 

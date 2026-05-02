@@ -13,8 +13,7 @@ const MobileCheckoutPage = () => {
       
       <main className="mobile-content pt-8">
         <nav className="flex justify-between items-center mb-12 relative px-2">
-          <div style={{ position: 'absolute', top: '50%', left: 0, width: '100%', height: '1px', background: 'rgba(2
-55,255,255,0.1)', zIndex: -1 }}></div>
+          <div style={{ position: 'absolute', top: '50%', left: 0, width: '100%', height: '1px', background: 'rgba(255,255,255,0.1)', zIndex: -1 }}></div>
           <div className="flex flex-col items-center gap-2">
             <div className="w-8 h-8 rounded-full brand-gradient flex items-center justify-center text-white ring-4 ring-black">
               <Icon name="check" style={{ fontSize: '14px' }} />

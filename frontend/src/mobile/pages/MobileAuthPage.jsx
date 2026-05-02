@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiMail, FiLock, FiUser, FiArrowRight, FiGithub } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
-import { MobileHeader } from '../components/MobileUI';
 
 const MobileAuthPage = () => {
   const navigate = useNavigate();
