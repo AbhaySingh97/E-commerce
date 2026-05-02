@@ -3,8 +3,9 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import { FiHome, FiSearch, FiShoppingBag, FiUser, FiHeart } from 'react-icons/fi';
 import './styles/mobile.css';
 
-// Lazy load mobile pages
-const MobileHomePage = lazy(() => import('./pages/MobileHomePage'));
+import MobileHomePage from './pages/MobileHomePage';
+
+// Lazy load other mobile pages
 const MobileProductsPage = lazy(() => import('./pages/MobileProductsPage'));
 const MobileProductDetailPage = lazy(() => import('./pages/MobileProductDetailPage'));
 const MobileCategoriesPage = lazy(() => import('./pages/MobileCategoriesPage'));

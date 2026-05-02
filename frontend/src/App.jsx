@@ -33,8 +33,10 @@ const WelcomeScreen = ({ onFinished }) => {
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
-    const showTimer = setTimeout(() => setFadeOut(true), 4500);
-    const finishTimer = setTimeout(onFinished, 5300);
+    // Show screen for 2.2s then start fade out
+    const showTimer = setTimeout(() => setFadeOut(true), 2200);
+    // Finish after 2.8s total
+    const finishTimer = setTimeout(onFinished, 2800);
     return () => {
       clearTimeout(showTimer);
       clearTimeout(finishTimer);
@@ -135,13 +137,13 @@ const DesktopApp = () => {
 };
 
 function App() {
-  const [showWelcome, setShowWelcome] = useState(() => !sessionStorage.getItem('caryqel_visited'));
+  const [showWelcome, setShowWelcome] = useState(() => !localStorage.getItem('caryqel_visited'));
   const location = useLocation();
   const { loading } = useAuth();
   const isMobile = useIsMobile();
 
   const handleWelcomeFinished = () => {
-    sessionStorage.setItem('caryqel_visited', 'true');
+    localStorage.setItem('caryqel_visited', 'true');
     setShowWelcome(false);
   };
 
