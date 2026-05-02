@@ -13,8 +13,8 @@ const MobileProfilePage = () => {
       
       <main className="mobile-content py-8">
         <section className="flex flex-col items-center mb-section-gap">
-          <div className="relative mb-6" style={{ position: 'relative' }}>
-            <div className="w-32 h-32 rounded-full border-2 border-primary-container p-1">
+          <div className="relative mb-4" style={{ position: 'relative' }}>
+            <div className="w-24 h-24 rounded-full border border-primary-container p-1">
               <img 
                 alt="Profile" 
                 className="w-full h-full object-cover rounded-full" 
@@ -22,16 +22,16 @@ const MobileProfilePage = () => {
               />
             </div>
             <div 
-              className="absolute bottom-0 right-0 brand-gradient w-8 h-8 rounded-full flex items-center justify-center border-4 border-surface shadow-lg"
+              className="absolute bottom-0 right-0 brand-gradient w-6 h-6 rounded-full flex items-center justify-center border-2 border-surface shadow-lg"
               style={{ position: 'absolute', bottom: 0, right: 0 }}
             >
-              <Icon name="verified" style={{ fontSize: '16px', color: '#fff' }} />
+              <Icon name="verified" style={{ fontSize: '12px', color: '#fff' }} />
             </div>
           </div>
           <div className="text-center">
-            <h2 className="hero-title" style={{ fontSize: '32px', fontStyle: 'normal', color: '#fff' }}>{user?.name || 'Alex Sterling'}</h2>
-            <div className="inline-flex px-4 py-1.5 rounded-full brand-gradient shadow-lg shadow-violet-500/20 mt-2">
-              <span className="card-label" style={{ color: '#fff', fontSize: '10px' }}>Platinum Member</span>
+            <h2 className="hero-title" style={{ fontSize: '24px', fontStyle: 'normal', color: '#fff' }}>{user?.name || 'Alex Sterling'}</h2>
+            <div className="inline-flex px-3 py-1 rounded-full glass-panel mt-2 border-primary/20">
+              <span className="card-label" style={{ color: 'var(--primary)', fontSize: '10px' }}>Platinum Member</span>
             </div>
           </div>
         </section>

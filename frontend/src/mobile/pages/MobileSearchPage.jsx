@@ -20,17 +20,15 @@ const MobileSearchPage = () => {
   };
 
   return (
-    <div className="mobile-page pb-32">
+    <div className="mobile-page pb-32 bg-background">
       <TopAppBar title="Search" />
       
-      <main className="mobile-content pt-8">
-        <section style={{ marginBottom: '48px' }}>
-          <div className="relative group" style={{ position: 'relative' }}>
-            <div style={{ position: 'absolute', top: 0, bottom: 0, left: '16px', display: 'flex', alignItems: 'center', pointerEvents: 'none' }}>
-              <Icon name="search" style={{ color: 'rgba(255,255,255,0.4)' }} />
-            </div>
+      <main className="mobile-content pt-4">
+        <section style={{ marginBottom: '32px' }}>
+          <div className="search-input-group">
+            <Icon name="search" className="search-input-icon" style={{ fontSize: '20px' }} />
             <input 
-              className="w-full h-14 bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 text-white focus:outline-none focus:border-primary/40 focus:bg-white/10 transition-all" 
+              className="stitch-search-input" 
               placeholder="Search the collection..." 
               type="text"
               value={query}
@@ -40,23 +38,30 @@ const MobileSearchPage = () => {
           </div>
           
           {query.length === 0 && (
-            <div className="mt-6">
-              <p className="card-label mb-4">Popular Searches</p>
+            <div className="mt-8">
+              <p className="card-label mb-4" style={{ opacity: 0.5 }}>Popular Searches</p>
               <div className="flex flex-wrap gap-2">
                 {['Oversized Blazers', 'Tech Kits', 'Minimalist Watches'].map(tag => (
-                  <span 
+                  <button 
                     key={tag} 
-                    className="px-4 py-2 rounded-full glass-panel text-[12px] font-semibold text-white/80 hover:border-primary/40 cursor-pointer transition-colors"
+                    className="pill pill-ghost"
+                    style={{ fontSize: '11px', padding: '10px 20px' }}
                     onClick={() => handleSearch(tag)}
                   >
                     {tag}
-                  </span>
+                  </button>
                 ))}
               </div>
             </div>
           )}
         </section>
         
+        {results.length > 0 && (
+          <div className="mobile-section-header" style={{ marginBottom: '24px' }}>
+            <span className="card-label" style={{ opacity: 0.5 }}>{results.length} Objects Found</span>
+          </div>
+        )}
+
         <section className="masonry-grid">
           {results.map((product, idx) => (
             <ProductItem 
@@ -68,8 +73,9 @@ const MobileSearchPage = () => {
         </section>
 
         {query.length > 2 && results.length === 0 && (
-          <div style={{ textAlign: 'center', marginTop: '80px', opacity: 0.4 }}>
-            <p>No results found for "{query}"</p>
+          <div className="flex flex-col items-center justify-center py-20 opacity-30">
+            <Icon name="search_off" style={{ fontSize: '48px', marginBottom: '16px' }} />
+            <p className="font-body-md">No results found for "{query}"</p>
           </div>
         )}
       </main>

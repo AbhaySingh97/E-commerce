@@ -12,7 +12,7 @@ const MobileWishlistPage = () => {
       <main className="mobile-content pt-8">
         <div className="mobile-section-header">
           <h2 className="hero-title" style={{ fontSize: '24px', fontStyle: 'normal' }}>Saved Objects</h2>
-          <span className="card-label" style={{ opacity: 0.4 }}>{wishlistItems.length} items</span>
+          <span className="card-label" style={{ opacity: 0.4 }}>{wishlistItems.length} items</span>  
         </div>
 
         {wishlistItems.length > 0 ? (
@@ -30,7 +30,7 @@ const MobileWishlistPage = () => {
             <p>Your wishlist is empty</p>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 };
