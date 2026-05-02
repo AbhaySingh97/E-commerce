@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { FiHome, FiSearch, FiShoppingBag, FiUser, FiHeart } from 'react-icons/fi';
 import './styles/mobile.css';
 
@@ -22,28 +22,28 @@ const MobileContactPage = lazy(() => import('./pages/MobileContactPage'));
 
 const MobileNavbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const navItems = [
+    { icon: <FiHome size={24} />, label: 'Home', path: '/' },
+    { icon: <FiSearch size={24} />, label: 'Search', path: '/search' },
+    { icon: <FiShoppingBag size={24} />, label: 'Shop', path: '/products' },
+    { icon: <FiHeart size={24} />, label: 'Wishlist', path: '/wishlist' },
+    { icon: <FiUser size={24} />, label: 'Profile', path: '/profile' },
+  ];
+
   return (
     <nav className="mobile-nav">
-      <div className="mobile-nav-item" onClick={() => navigate('/')}>
-        <FiHome size={24} />
-        <span>Home</span>
-      </div>
-      <div className="mobile-nav-item" onClick={() => navigate('/search')}>
-        <FiSearch size={24} />
-        <span>Search</span>
-      </div>
-      <div className="mobile-nav-item" onClick={() => navigate('/products')}>
-        <FiShoppingBag size={24} />
-        <span>Shop</span>
-      </div>
-      <div className="mobile-nav-item" onClick={() => navigate('/wishlist')}>
-        <FiHeart size={24} />
-        <span>Wishlist</span>
-      </div>
-      <div className="mobile-nav-item" onClick={() => navigate('/profile')}>
-        <FiUser size={24} />
-        <span>Profile</span>
-      </div>
+      {navItems.map((item) => (
+        <div 
+          key={item.path}
+          className={`mobile-nav-item ${location.pathname === item.path ? 'active' : ''}`} 
+          onClick={() => navigate(item.path)}
+        >
+          {item.icon}
+          <span>{item.label}</span>
+        </div>
+      ))}
     </nav>
   );
 };

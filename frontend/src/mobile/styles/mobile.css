@@ -27,19 +27,20 @@
 
 .mobile-nav {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: calc(70px + var(--safe-area-bottom));
-  background: var(--mobile-nav-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  bottom: 24px;
+  left: 20px;
+  right: 20px;
+  height: 64px;
+  background: rgba(15, 15, 15, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding-bottom: var(--safe-area-bottom);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  z-index: 1000;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  z-index: 2000;
 }
 
 .mobile-nav-item {
@@ -47,16 +48,36 @@
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  color: rgba(255, 255, 255, 0.5);
-  transition: all 0.2s ease;
+  color: rgba(255, 255, 255, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
+  font-weight: 600;
+}
+
+.mobile-nav-item.active {
+  color: #fff;
+  transform: translateY(-2px);
 }
 
 .mobile-nav-item:active {
   transform: scale(0.9);
-  color: var(--mobile-accent);
+}
+
+/* Update story ring for more premium feel */
+.story-ring {
+  width: 72px;
+  height: 72px;
+  padding: 2px;
+  background: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+  position: relative;
+}
+
+.story-ring::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border: 1px solid rgba(167, 139, 250, 0.3);
+  border-radius: 50%;
 }
 
 .mobile-loader {
@@ -95,34 +116,180 @@
   font-weight: 800;
 }
 
-.mobile-home-header p {
-  color: rgba(255, 255, 255, 0.6);
-  margin-top: 12px;
-  font-size: 1.1rem;
-}
-
-.mobile-category-scroll {
+/* App-Specific Layout Primitives */
+.mobile-home {
   display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-bottom: 40px;
+}
+
+/* Stories (Circular Categories) */
+.mobile-stories-container {
+  display: flex;
+  gap: 16px;
   overflow-x: auto;
-  gap: 12px;
-  padding-bottom: 8px;
+  padding: 4px 20px;
+  margin: 0 -20px;
   scrollbar-width: none;
-  margin: 0 -16px;
-  padding: 0 16px;
+}
+.mobile-stories-container::-webkit-scrollbar { display: none; }
+
+.story-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 70px;
 }
 
-.mobile-category-scroll::-webkit-scrollbar {
-  display: none;
+.story-ring {
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  padding: 3px;
+  background: var(--mobile-accent-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.mobile-category-pill {
-  padding: 10px 20px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 100px;
-  white-space: nowrap;
-  font-size: 0.9rem;
+.story-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--mobile-bg);
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.story-inner img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.story-label {
+  font-size: 11px;
   font-weight: 500;
+  color: var(--mobile-text-dim);
+}
+
+/* High-Impact Banner */
+.mobile-promo-banner {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: 28px;
+  overflow: hidden;
+  position: relative;
+  background: #111;
+}
+
+.banner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.7;
+}
+
+.banner-content {
+  position: absolute;
+  inset: 0;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 60%);
+}
+
+.banner-label {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--mobile-accent);
+  margin-bottom: 8px;
+}
+
+.banner-title {
+  font-size: 1.5rem;
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+/* Horizontal Product Scroller */
+.mobile-horizontal-scroll {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 4px 20px;
+  margin: 0 -20px;
+  scrollbar-width: none;
+}
+.mobile-horizontal-scroll::-webkit-scrollbar { display: none; }
+
+.scroll-item {
+  min-width: 160px;
+  width: 160px;
+}
+
+/* Search Bar in Header */
+.header-search-input {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  margin: 0 12px;
+  color: var(--mobile-text-dim);
+  font-size: 0.9rem;
+}
+
+/* Bento App Grid */
+.mobile-bento-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(2, 120px);
+  gap: 12px;
+}
+
+.bento-item {
+  background: var(--mobile-surface);
+  border: 1px solid var(--mobile-border);
+  border-radius: 20px;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.bento-item-large {
+  grid-row: span 2;
+}
+
+.bento-item h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  z-index: 2;
+}
+
+.bento-bg-icon {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  font-size: 4rem;
+  opacity: 0.05;
+  transform: rotate(-15deg);
 }
 
 .mobile-section-title {
