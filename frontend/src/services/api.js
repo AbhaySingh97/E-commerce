@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const getBaseURL = () => {
   // Check if a specific API URL is provided via environment variables
-  let url = process.env.REACT_APP_API_URL;
+  let url = import.meta.env.VITE_API_URL;
   
   if (url) {
     url = url.trim().replace(/\/$/, '');
@@ -14,7 +14,7 @@ const getBaseURL = () => {
   }
 
   // Fallback for production vs development
-  return process.env.NODE_ENV === 'production'
+  return import.meta.env.PROD
     ? '/api/v1' // Works if Vercel rewrites are configured
     : 'http://localhost:5000/api/v1';
 };
@@ -24,7 +24,7 @@ const API = axios.create({
 });
 
 // Debug log for deployment troubleshooting
-if (process.env.NODE_ENV === 'production') {
+if (import.meta.env.PROD) {
   console.log('Caryqel API BaseURL:', API.defaults.baseURL);
 }
 
@@ -51,7 +51,7 @@ API.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (process.env.NODE_ENV === 'production') {
+    if (import.meta.env.PROD) {
       console.error('API Request Failed:', {
         url: error.config?.url,
         method: error.config?.method,
