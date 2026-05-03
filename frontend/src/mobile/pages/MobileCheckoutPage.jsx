@@ -104,10 +104,10 @@ const MobileCheckoutPage = () => {
     }
   };
 
-  if (loading) return <div className="mobile-page flex items-center justify-center py-20 text-white/20 bg-[#080808]">Preparing ritual...</div>;
+  if (loading) return <div className="mobile-page flex items-center justify-center py-20 text-white/20 bg-dark-0">Preparing ritual...</div>;
 
   return (
-    <div className="mobile-page pb-32 bg-[#080808]">
+    <div className="mobile-page pb-32 bg-dark-0">
       <TopAppBar title="Secure Checkout" showBack={true} />
       
       <main className="mobile-content px-6 pt-8">
@@ -130,7 +130,7 @@ const MobileCheckoutPage = () => {
               <div 
                 key={addr._id} 
                 onClick={() => setSelectedAddressId(addr._id)}
-                className={`p-6 rounded-[24px] border transition-all duration-300 ${selectedAddressId === addr._id ? 'border-primary bg-primary/5' : 'border-white/5 bg-[#111]'}`}
+                className={`p-6 rounded-[24px] border transition-all duration-300 ${selectedAddressId === addr._id ? 'border-primary bg-primary/5' : 'border-white/5 bg-dark-1'}`}
               >
                 <div className="flex justify-between mb-2">
                   <span className="text-white font-medium">{addr.type || 'Home'}</span>
@@ -148,7 +148,7 @@ const MobileCheckoutPage = () => {
           <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
             {cart.items.map((item) => (
               <div key={item.product._id} className="min-w-[100px]">
-                <div className="w-24 h-24 rounded-2xl overflow-hidden bg-[#111] mb-2">
+                <div className="w-24 h-24 rounded-2xl overflow-hidden bg-dark-1 mb-2">
                   <img src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-cover" />
                 </div>
                 <p className="text-[9px] text-white/40 uppercase tracking-widest truncate">{item.product.name}</p>
@@ -164,14 +164,14 @@ const MobileCheckoutPage = () => {
           <div className="grid grid-cols-2 gap-4">
             <button 
               onClick={() => { triggerHaptic('light'); setPaymentMethod('cod'); }}
-              className={`p-6 rounded-[24px] border flex flex-col items-center gap-3 transition-all ${paymentMethod === 'cod' ? 'border-primary bg-primary/5' : 'border-white/5 bg-[#111]'}`}
+              className={`p-6 rounded-[24px] border flex flex-col items-center gap-3 transition-all ${paymentMethod === 'cod' ? 'border-primary bg-primary/5' : 'border-white/5 bg-dark-1'}`}
             >
               <Icon name="payments" style={{ color: paymentMethod === 'cod' ? '#fff' : 'rgba(255,255,255,0.2)' }} />
               <span className={`text-[11px] font-bold uppercase tracking-widest ${paymentMethod === 'cod' ? 'text-white' : 'text-white/20'}`}>COD</span>
             </button>
             <button 
               onClick={() => { triggerHaptic('light'); setPaymentMethod('razorpay'); }}
-              className={`p-6 rounded-[24px] border flex flex-col items-center gap-3 transition-all ${paymentMethod === 'razorpay' ? 'border-primary bg-primary/5' : 'border-white/5 bg-[#111]'}`}
+              className={`p-6 rounded-[24px] border flex flex-col items-center gap-3 transition-all ${paymentMethod === 'razorpay' ? 'border-primary bg-primary/5' : 'border-white/5 bg-dark-1'}`}
             >
               <Icon name="credit_card" style={{ color: paymentMethod === 'razorpay' ? '#fff' : 'rgba(255,255,255,0.2)' }} />
               <span className={`text-[11px] font-bold uppercase tracking-widest ${paymentMethod === 'razorpay' ? 'text-white' : 'text-white/20'}`}>Razorpay</span>
@@ -185,7 +185,7 @@ const MobileCheckoutPage = () => {
         </div>
 
         {/* Total Summary */}
-        <section className="p-8 rounded-[32px] bg-[#111] border border-white/5 mb-10">
+        <section className="p-8 rounded-[32px] bg-dark-1 border border-white/5 mb-10">
           <div className="space-y-4 mb-8">
             <div className="flex justify-between">
               <span className="text-white/40 text-sm">Amount</span>

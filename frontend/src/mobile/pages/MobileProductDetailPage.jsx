@@ -48,8 +48,8 @@ const MobileProductDetailPage = () => {
     }
   };
 
-  if (loading) return <div className="mobile-page flex items-center justify-center py-20 text-white/30 bg-[#080808]">Tracing essence...</div>;
-  if (!product) return <div className="mobile-page flex items-center justify-center py-20 text-white/30 bg-[#080808]">Essence lost</div>;
+  if (loading) return <div className="mobile-page flex items-center justify-center py-20 text-white/30 bg-dark-0">Tracing essence...</div>;
+  if (!product) return <div className="mobile-page flex items-center justify-center py-20 text-white/30 bg-dark-0">Essence lost</div>;
 
   return (
     <div className="mobile-page pb-40 bg-[#0a0a0a]">
@@ -131,7 +131,7 @@ const MobileProductDetailPage = () => {
             <div className="grid grid-cols-2 gap-6">
               {related.map(p => (
                 <div key={p._id} className="ritual-item" onClick={() => navigate(`/products/${p.slug}`)}>
-                  <div className="aspect-square rounded-[24px] overflow-hidden bg-[#111] mb-4">
+                  <div className="aspect-square rounded-[24px] overflow-hidden bg-dark-1 mb-4">
                     <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover" />
                   </div>
                   <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold mb-1">{p.name}</p>

@@ -31,7 +31,7 @@ const MobileOrdersPage = () => {
     : orders.filter(o => o.status === activeFilter);
 
   return (
-    <div className="mobile-page pb-32 bg-[#080808]">
+    <div className="mobile-page pb-32 bg-dark-0">
       <TopAppBar title="Order History" showBack={true} />
       
       <main className="mobile-content px-6 pt-8">
@@ -54,7 +54,7 @@ const MobileOrdersPage = () => {
             {filteredOrders.map((order) => (
               <div 
                 key={order._id} 
-                className="p-6 rounded-[24px] bg-[#111] border border-white/5"
+                className="p-6 rounded-[24px] bg-dark-1 border border-white/5"
                 onClick={() => navigate(`/orders/${order._id}`)}
               >
                 <div className="flex justify-between items-center mb-4">

@@ -2,6 +2,11 @@
   "name": "ecommerce-frontend",
   "version": "1.0.0",
   "private": true,
+  "browser": {
+    "fs": false,
+    "path": false,
+    "os": false
+  },
   "engines": {
     "node": "20.x"
   },

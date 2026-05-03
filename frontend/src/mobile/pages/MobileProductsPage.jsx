@@ -28,7 +28,7 @@ const MobileProductsPage = () => {
   const products = filteredProducts;
 
   return (
-    <div className="mobile-page pb-32 bg-[#080808]">
+    <div className="mobile-page pb-32 bg-dark-0">
       <TopAppBar title="Collections" />
       
       <main className="mobile-content pt-8">

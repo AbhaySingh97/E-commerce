@@ -23,7 +23,7 @@ const MobileCartPage = () => {
           <>
             <div className="space-y-6 mt-8">
               {cart.items.map((item) => (
-                <div key={item.product._id} className="flex gap-6 items-center p-4 bg-[#111] rounded-[24px] border border-white/5">
+                <div key={item.product._id} className="flex gap-6 items-center p-4 bg-dark-1 rounded-[24px] border border-white/5">
                   <div className="w-24 h-32 rounded-2xl overflow-hidden bg-[#1a1a1a]">
                     <img src={item.product.images?.[0]?.includes('unsplash.com') ? `${item.product.images[0].split('?')[0]}?auto=format&fit=crop&w=300&q=80` : item.product.images?.[0]} alt={item.product.name} className="w-full h-full object-cover" />
                   </div>
@@ -105,7 +105,7 @@ const MobileCartPage = () => {
               <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
                 {products.slice(0, 4).map(p => (
                   <div key={p._id} className="min-w-[160px]" onClick={() => navigate(`/products/${p.slug}`)}>
-                    <div className="aspect-[3/4] rounded-2xl overflow-hidden bg-[#111] mb-3">
+                    <div className="aspect-[3/4] rounded-2xl overflow-hidden bg-dark-1 mb-3">
                       <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover" />
                     </div>
                     <p className="text-[9px] text-primary font-bold uppercase tracking-widest mb-1">{p.brand || 'CARYQEL'}</p>

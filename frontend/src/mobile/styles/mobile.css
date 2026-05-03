@@ -737,7 +737,8 @@ body {
 .h-16 { height: 64px; }
 .rounded-full { border-radius: 999px; }
 .rounded-2xl { border-radius: 16px; }
-.bg-[#111] { background: #111; }
+.bg-dark-1 { background: #111; }
+.bg-dark-0 { background: #080808; }
 .text-white { color: #fff; }
 .text-primary { color: var(--primary); }
 .text-lg { font-size: 18px; }

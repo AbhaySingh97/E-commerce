@@ -61,7 +61,7 @@ const MobileSearchPage = () => {
   };
 
   return (
-    <div className="mobile-page pb-32 animate-fade-in bg-[#080808]">
+    <div className="mobile-page pb-32 animate-fade-in bg-dark-0">
       <main className="mobile-content pt-8">
         <div className="search-input-group relative">
           <Icon name="search" className="search-input-icon" />
@@ -80,7 +80,7 @@ const MobileSearchPage = () => {
 
           {/* Autocomplete Suggestions */}
           {showSuggestions && suggestions.length > 0 && (
-            <div className="absolute top-full left-0 right-0 z-[100] mt-2 bg-[#111] border border-white/5 rounded-2xl overflow-hidden shadow-2xl">
+            <div className="absolute top-full left-0 right-0 z-[100] mt-2 bg-dark-1 border border-white/5 rounded-2xl overflow-hidden shadow-2xl">
               {suggestions.map((s, i) => (
                 <button 
                   key={i}

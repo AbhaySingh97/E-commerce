@@ -61,7 +61,7 @@ const MobileAddressPage = () => {
   };
 
   return (
-    <div className="mobile-page pb-32 bg-[#080808]">
+    <div className="mobile-page pb-32 bg-dark-0">
       <TopAppBar title="Address Book" showBack={true} />
       
       <main className="mobile-content px-6 pt-8">
@@ -75,7 +75,7 @@ const MobileAddressPage = () => {
         ) : addresses.length > 0 ? (
           <div className="space-y-6">
             {addresses.map((addr) => (
-              <div key={addr._id} className="p-6 rounded-[24px] bg-[#111] border border-white/5 relative active:scale-[0.98] transition-transform">
+              <div key={addr._id} className="p-6 rounded-[24px] bg-dark-1 border border-white/5 relative active:scale-[0.98] transition-transform">
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">

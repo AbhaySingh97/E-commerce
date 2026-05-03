@@ -54,7 +54,7 @@ const MobileWishlistPage = () => {
   };
 
   return (
-    <div className="mobile-page pb-32 bg-[#080808]">
+    <div className="mobile-page pb-32 bg-dark-0">
       <TopAppBar title="Saved" showBack={true} />
       
       <main className="mobile-content pt-8">
@@ -81,7 +81,7 @@ const MobileWishlistPage = () => {
                 const product = item.product;
                 if (!product) return null;
                 return (
-                  <div key={item._id} className="flex gap-6 items-center p-4 bg-[#111] rounded-[24px] border border-white/5 relative active:scale-[0.98] transition-transform">
+                  <div key={item._id} className="flex gap-6 items-center p-4 bg-dark-1 rounded-[24px] border border-white/5 relative active:scale-[0.98] transition-transform">
                     <div className="w-24 h-32 rounded-2xl overflow-hidden bg-[#1a1a1a]">
                       <img src={product.images?.[0]} alt={product.name} className="w-full h-full object-cover" />
                     </div>

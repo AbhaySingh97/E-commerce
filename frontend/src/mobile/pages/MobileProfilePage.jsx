@@ -48,7 +48,7 @@ const MobileProfilePage = () => {
   ];
 
   return (
-    <div className="mobile-page pb-32 bg-[#080808]">
+    <div className="mobile-page pb-32 bg-dark-0">
       <header className="checkout-header-v3">
         <button onClick={() => navigate(-1)}>
           <Icon name="arrow_back" style={{ color: '#a855f7', fontSize: '24px' }} />

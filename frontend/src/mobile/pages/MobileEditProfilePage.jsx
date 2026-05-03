@@ -33,12 +33,12 @@ const MobileEditProfilePage = () => {
   };
 
   return (
-    <div className="mobile-page pb-32 bg-[#080808]">
+    <div className="mobile-page pb-32 bg-dark-0">
       <TopAppBar title="Edit Identity" showBack={true} />
       
       <main className="mobile-content px-8 pt-12">
         <div className="flex flex-col items-center mb-12">
-          <div className="w-24 h-24 rounded-full bg-[#111] border border-white/5 flex items-center justify-center mb-4 overflow-hidden">
+          <div className="w-24 h-24 rounded-full bg-dark-1 border border-white/5 flex items-center justify-center mb-4 overflow-hidden">
             <img 
               src={user?.avatar || user?.image || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200'} 
               alt="Avatar" 

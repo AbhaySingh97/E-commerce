@@ -36,13 +36,13 @@ const MobileOrderTrackingPage = () => {
     }));
   };
 
-  if (loading) return <div className="mobile-page flex items-center justify-center py-20 text-white/20 bg-[#080808]">Tracing path...</div>;
-  if (!order) return <div className="mobile-page flex items-center justify-center py-20 text-white/20 bg-[#080808]">Path lost</div>;
+  if (loading) return <div className="mobile-page flex items-center justify-center py-20 text-white/20 bg-dark-0">Tracing path...</div>;
+  if (!order) return <div className="mobile-page flex items-center justify-center py-20 text-white/20 bg-dark-0">Path lost</div>;
 
   const trackingSteps = getStatusStep(order.status);
 
   return (
-    <div className="mobile-page pb-32 bg-[#080808]">
+    <div className="mobile-page pb-32 bg-dark-0">
       <TopAppBar title={`Ritual #${order.orderNumber || order._id.slice(-6)}`} showBack={true} />
       
       <main className="mobile-content px-6 pt-8">
@@ -61,7 +61,7 @@ const MobileOrderTrackingPage = () => {
           {trackingSteps.map((step, idx) => (
             <div key={step.name} className="flex gap-6">
               <div className="flex flex-col items-center">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center z-10 ${step.completed ? 'bg-primary text-white' : 'bg-[#111] border border-white/5 text-white/20'}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center z-10 ${step.completed ? 'bg-primary text-white' : 'bg-dark-1 border border-white/5 text-white/20'}`}>
                   <Icon name={step.completed ? 'check' : 'radio_button_unchecked'} style={{ fontSize: '16px' }} />
                 </div>
                 {idx < trackingSteps.length - 1 && (
@@ -79,7 +79,7 @@ const MobileOrderTrackingPage = () => {
         {/* Address */}
         <section className="mb-10">
           <h3 className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-6">Destination</h3>
-          <div className="p-6 rounded-[24px] bg-[#111] border border-white/5 flex gap-4">
+          <div className="p-6 rounded-[24px] bg-dark-1 border border-white/5 flex gap-4">
             <Icon name="location_on" style={{ color: 'var(--primary)', fontSize: '20px' }} />
             <div>
               <p className="text-white font-medium mb-1">{order.shippingAddress.fullName}</p>
