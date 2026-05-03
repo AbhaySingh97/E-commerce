@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TopAppBar, Icon } from '../components/MobileUI';
+import { TopAppBar } from '../components/MobileUI';
 import { useAuth } from '../../context/AuthContext';
 import { authAPI } from '../../services/api';
 import toast from 'react-hot-toast';
 
 const MobileEditProfilePage = () => {
-  const { user, login } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: user?.name || '',
@@ -19,7 +19,7 @@ const MobileEditProfilePage = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const res = await authAPI.updateProfile(formData);
+      await authAPI.updateProfile(formData);
       // We don't have a direct "update user in context" method other than login
       // but usually the backend returns the updated user.
       // If AuthContext doesn't support refresh, we might need to handle it.

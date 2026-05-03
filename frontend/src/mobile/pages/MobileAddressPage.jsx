@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { TopAppBar, Icon, triggerHaptic } from '../components/MobileUI';
 import { authAPI } from '../../services/api';
 import toast from 'react-hot-toast';
