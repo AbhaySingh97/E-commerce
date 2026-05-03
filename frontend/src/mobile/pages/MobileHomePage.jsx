@@ -1,14 +1,23 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ProductItem, Icon, StyleConcierge, triggerHaptic } from '../components/MobileUI';
-import { useProducts } from '../../context/ProductContext';
+import { useProducts, useCategories } from '../../services/queries';
 import toast from 'react-hot-toast';
 import heroArmchair from '../../assets/hero_armchair.png';
 
+// Normalize helper
+const toArray = (val) =>
+  Array.isArray(val) ? val : Array.isArray(val?.products) ? val.products : [];
+
 const MobileHomePage = () => {
   const navigate = useNavigate();
-  const { products, categories, loading } = useProducts();
+  const { data: rawProducts, isLoading: loadingProducts } = useProducts();
+  const { data: rawCategories, isLoading: loadingCategories } = useCategories();
   const [selectedCategory, setSelectedCategory] = useState('All');
+
+  const products = toArray(rawProducts);
+  const categories = toArray(rawCategories);
+  const loading = loadingProducts || loadingCategories;
 
   const filteredCategories = categories.map(cat => {
     const items = products.filter(p => p.category?._id === cat._id || p.category === cat._id);

@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { FiArrowRight, FiMail } from 'react-icons/fi';
-import { productAPI, newsletterAPI } from '../services/api';
+import { newsletterAPI } from '../services/api';
+import { useNewArrivals, useFeaturedProducts, useCategories } from '../services/queries';
 import { useCart } from '../context/CartContext';
 import { formatCurrency } from '../lib/formatters';
 import { categories as fallbackCategories, getFeaturedProducts, getNewArrivals } from '../data/mockData';
@@ -17,55 +18,34 @@ import SectionHeader from './ui/SectionHeader';
 import CircularGallery from './ui/CircularGallery';
 import MagicBento from './MagicBento';
 
+// Normalize helper — some endpoints return {products:[]} others return []
+const toArray = (val) =>
+  Array.isArray(val) ? val :
+  Array.isArray(val?.products) ? val.products : [];
+
 const HomePage = () => {
-  const [newArrivals, setNewArrivals] = useState([]);
-  const [featured, setFeatured] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
 
-  useEffect(() => {
-    const fetchHomeData = async () => {
-      const results = await Promise.allSettled([
-        productAPI.getNewArrivals(),
-        productAPI.getFeatured(),
-        productAPI.getCategories()
-      ]);
+  // React Query — auto-cached, no manual loading state needed
+  const { data: rawNewArrivals, isLoading: loadingNew } = useNewArrivals();
+  const { data: rawFeatured, isLoading: loadingFeatured } = useFeaturedProducts();
+  const { data: rawCategories, isLoading: loadingCats } = useCategories();
 
-      const [newArrivalsRes, featuredRes, categoriesRes] = results;
+  const newArrivals = useMemo(() =>
+    toArray(rawNewArrivals).length > 0 ? toArray(rawNewArrivals) : getNewArrivals().slice(0, 8),
+  [rawNewArrivals]);
 
-      // Normalize helper — some endpoints return {products:[]} others return []  
-      const toArray = (val) => Array.isArray(val) ? val : (Array.isArray(val?.products) ? val.products : []);
+  const featured = useMemo(() =>
+    toArray(rawFeatured).length > 0 ? toArray(rawFeatured) : getFeaturedProducts().slice(0, 8),
+  [rawFeatured]);
 
-      if (newArrivalsRes.status === 'fulfilled') {
-        setNewArrivals(toArray(newArrivalsRes.value.data));
-      } else {
-        setNewArrivals(getNewArrivals().slice(0, 8));
-      }
+  const categories = useMemo(() =>
+    toArray(rawCategories).length > 0 ? toArray(rawCategories) : fallbackCategories.slice(0, 4),
+  [rawCategories]);
 
-      if (featuredRes.status === 'fulfilled') {
-        setFeatured(toArray(featuredRes.value.data));
-      } else {
-        setFeatured(getFeaturedProducts().slice(0, 8));
-      }
+  const loading = loadingNew || loadingFeatured || loadingCats;
 
-      if (categoriesRes.status === 'fulfilled') {
-        setCategories(toArray(categoriesRes.value.data));
-      } else {
-        setCategories(fallbackCategories.slice(0, 4));
-      }
-
-      if (results.every((result) => result.status === 'rejected')) {
-        console.error('All home data fetches failed:', results.map(r => r.reason));
-        toast.error('Live storefront data is unavailable. Showing preview content.');
-      }
-
-      setLoading(false);
-    };
-
-    fetchHomeData();
-  }, []);
 
   const heroProduct = useMemo(() => featured[0] || newArrivals[0], [featured, newArrivals]);
   const bestSellers = useMemo(() => {
