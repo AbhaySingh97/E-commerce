@@ -35,20 +35,23 @@ const HomePage = () => {
 
       const [newArrivalsRes, featuredRes, categoriesRes] = results;
 
+      // Normalize helper — some endpoints return {products:[]} others return []  
+      const toArray = (val) => Array.isArray(val) ? val : (Array.isArray(val?.products) ? val.products : []);
+
       if (newArrivalsRes.status === 'fulfilled') {
-        setNewArrivals(newArrivalsRes.value.data || []);
+        setNewArrivals(toArray(newArrivalsRes.value.data));
       } else {
         setNewArrivals(getNewArrivals().slice(0, 8));
       }
 
       if (featuredRes.status === 'fulfilled') {
-        setFeatured(featuredRes.value.data || []);
+        setFeatured(toArray(featuredRes.value.data));
       } else {
         setFeatured(getFeaturedProducts().slice(0, 8));
       }
 
       if (categoriesRes.status === 'fulfilled') {
-        setCategories(categoriesRes.value.data || []);
+        setCategories(toArray(categoriesRes.value.data));
       } else {
         setCategories(fallbackCategories.slice(0, 4));
       }

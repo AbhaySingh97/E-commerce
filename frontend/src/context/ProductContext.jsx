@@ -15,13 +15,16 @@ export const ProductProvider = ({ children }) => {
       return;
     }
 
+    // Normalize helper — some endpoints return {products:[]} others return []
+    const toArray = (val) => Array.isArray(val) ? val : (Array.isArray(val?.products) ? val.products : []);
+
     try {
       const [catRes, prodRes] = await Promise.all([
         productAPI.getCategories(),
         productAPI.getProducts()
       ]);
-      setCategories(catRes.data);
-      setProducts(prodRes.data.products);
+      setCategories(toArray(catRes.data));
+      setProducts(toArray(prodRes.data));
       setLastFetched(Date.now());
     } catch (err) {
       console.error('Failed to pre-fetch product data', err);
