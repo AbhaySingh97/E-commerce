@@ -1,228 +1,127 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
-import { FiPackage, FiTruck, FiCheckCircle, FiMapPin, FiPhone } from 'react-icons/fi';
-import { TopAppBar } from '../components/MobileUI';
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { TopAppBar, Icon, triggerHaptic } from '../components/MobileUI';
+import { orderAPI } from '../../services/api';
+import toast from 'react-hot-toast';
 
 const MobileOrderTrackingPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const trackingSteps = [
-    { status: 'Order Placed', date: '24 May, 10:30 AM', icon: <FiPackage />, completed: true },
-    { status: 'Processed', date: '24 May, 02:15 PM', icon: <FiCheckCircle />, completed: true },
-    { status: 'Shipped', date: '25 May, 09:00 AM', icon: <FiTruck />, completed: true, active: true },
-    { status: 'Out for Delivery', date: 'Expected today', icon: <FiPackage />, completed: false },
-    { status: 'Delivered', date: 'Pending', icon: <FiCheckCircle />, completed: false },
-  ];
+  useEffect(() => {
+    const fetchOrder = async () => {
+      try {
+        setLoading(true);
+        const res = await orderAPI.getOrder(id);
+        setOrder(res.data);
+      } catch (err) {
+        console.error('Failed to fetch order', err);
+        toast.error('Manifest not found');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOrder();
+  }, [id]);
+
+  const getStatusStep = (status) => {
+    const steps = ['Pending', 'Processing', 'Shipped', 'Delivered'];
+    const currentIdx = steps.indexOf(status);
+    return steps.map((step, idx) => ({
+      name: step,
+      completed: idx <= currentIdx,
+      active: idx === currentIdx
+    }));
+  };
+
+  if (loading) return <div className="mobile-page flex items-center justify-center py-20 text-white/20 bg-[#080808]">Tracing path...</div>;
+  if (!order) return <div className="mobile-page flex items-center justify-center py-20 text-white/20 bg-[#080808]">Path lost</div>;
+
+  const trackingSteps = getStatusStep(order.status);
 
   return (
-    <div className="mobile-page">
-      <TopAppBar title={`Track ${id}`} />
+    <div className="mobile-page pb-32 bg-[#080808]">
+      <TopAppBar title={`Ritual #${order.orderNumber || order._id.slice(-6)}`} showBack={true} />
       
-      <div className="mobile-page-content">
-        <div className="tracking-hero">
-          <div className="delivery-estimate">
-            <span className="label">Estimated Delivery</span>
-            <h2 className="date">Today, 26 May</h2>
-            <p className="time">Before 08:00 PM</p>
+      <main className="mobile-content px-6 pt-8">
+        {/* Tracking Card */}
+        <div className="p-8 rounded-[32px] bg-gradient-to-br from-primary/20 to-magenta/10 border border-white/10 mb-10 flex justify-between items-center">
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-2 block">Status</span>
+            <h2 className="text-white text-3xl font-serif">{order.status}</h2>
+            <p className="text-white/40 text-xs mt-2">Updated on {new Date(order.updatedAt).toLocaleDateString()}</p>
           </div>
-          <div className="hero-icon">
-            <FiTruck size={40} />
-          </div>
+          <Icon name="local_shipping" style={{ fontSize: '48px', color: '#fff', opacity: 0.2 }} />
         </div>
 
-        <div className="tracking-timeline">
+        {/* Timeline */}
+        <div className="space-y-0 mb-12">
           {trackingSteps.map((step, idx) => (
-            <div key={idx} className={`timeline-item ${step.completed ? 'completed' : ''} ${step.active ? 'active' : ''}`}>
-              <div className="timeline-left">
-                <div className="timeline-icon">{step.icon}</div>
-                {idx < trackingSteps.length - 1 && <div className="timeline-line" />}
+            <div key={step.name} className="flex gap-6">
+              <div className="flex flex-col items-center">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center z-10 ${step.completed ? 'bg-primary text-white' : 'bg-[#111] border border-white/5 text-white/20'}`}>
+                  <Icon name={step.completed ? 'check' : 'radio_button_unchecked'} style={{ fontSize: '16px' }} />
+                </div>
+                {idx < trackingSteps.length - 1 && (
+                  <div className={`w-[2px] h-12 ${step.completed ? 'bg-primary' : 'bg-white/5'}`}></div>
+                )}
               </div>
-              <div className="timeline-content">
-                <h3 className="step-status">{step.status}</h3>
-                <p className="step-date">{step.date}</p>
+              <div className="pt-1">
+                <h3 className={`text-sm font-bold uppercase tracking-widest ${step.active ? 'text-white' : 'text-white/20'}`}>{step.name}</h3>
+                {step.active && <p className="text-primary text-[10px] mt-1 font-bold">CURRENT STATUS</p>}
               </div>
             </div>
           ))}
         </div>
 
-        <div className="tracking-section">
-          <h2 className="section-title">Shipping Address</h2>
-          <div className="address-box">
-            <FiMapPin className="box-icon" />
-            <div className="box-info">
-              <span className="name">Rahul Sharma</span>
-              <p className="address">Apt 402, Skyline Towers, Andheri West, Mumbai, MH - 400053</p>
+        {/* Address */}
+        <section className="mb-10">
+          <h3 className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-6">Destination</h3>
+          <div className="p-6 rounded-[24px] bg-[#111] border border-white/5 flex gap-4">
+            <Icon name="location_on" style={{ color: 'var(--primary)', fontSize: '20px' }} />
+            <div>
+              <p className="text-white font-medium mb-1">{order.shippingAddress.fullName}</p>
+              <p className="text-white/40 text-sm leading-relaxed">
+                {order.shippingAddress.addressLine1}, {order.shippingAddress.city}<br/>
+                {order.shippingAddress.state}, {order.shippingAddress.pincode}
+              </p>
             </div>
           </div>
-        </div>
+        </section>
 
-        <div className="tracking-section">
-          <h2 className="section-title">Need Help?</h2>
-          <div className="help-buttons">
-            <button className="btn-help">
-              <FiPhone size={18} /> Call Delivery Partner
-            </button>
-            <button className="btn-help secondary">
-              Support Center
-            </button>
+        {/* Digital Twin Certificate */}
+        <section className="mb-12">
+          <h3 className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-6">Digital Proof</h3>
+          <div className="relative p-8 rounded-[32px] bg-gradient-to-br from-[#1a1a1a] to-[#0d0d0d] border border-white/10 overflow-hidden group">
+            <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-all"></div>
+            
+            <div className="relative z-10 flex flex-col items-center text-center">
+              <div className="w-20 h-20 bg-white p-2 rounded-2xl mb-6 shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+                {/* Mock QR Code */}
+                <div className="w-full h-full bg-black flex items-center justify-center">
+                  <Icon name="qr_code_2" style={{ color: '#fff', fontSize: '40px' }} />
+                </div>
+              </div>
+              <h4 className="text-white font-serif text-lg mb-2">Certificate of Authenticity</h4>
+              <p className="text-white/30 text-[10px] uppercase tracking-[0.2em] mb-6">Asset ID: {order._id.toUpperCase()}</p>
+              
+              <button className="text-primary text-[10px] font-bold uppercase tracking-widest border border-primary/20 px-6 py-3 rounded-full">
+                Download PDF
+              </button>
+            </div>
           </div>
-        </div>
-      </div>
+        </section>
 
-      <style dangerouslySetInnerHTML={{ __html: `
-        .tracking-hero {
-          background: var(--mobile-accent-gradient);
-          padding: 24px;
-          border-radius: 28px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 32px;
-          color: #fff;
-        }
-        .delivery-estimate .label {
-          font-size: 0.8rem;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          opacity: 0.8;
-        }
-        .delivery-estimate .date {
-          font-family: 'Playfair Display', serif;
-          font-size: 1.8rem;
-          margin: 4px 0;
-          font-weight: 800;
-        }
-        .delivery-estimate .time {
-          font-size: 0.9rem;
-          margin: 0;
-          opacity: 0.9;
-        }
-        .hero-icon {
-          width: 70px;
-          height: 70px;
-          background: rgba(255, 255, 255, 0.2);
-          border-radius: 20px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .tracking-timeline {
-          margin-bottom: 40px;
-          padding: 0 8px;
-        }
-        .timeline-item {
-          display: flex;
-          gap: 20px;
-          min-height: 80px;
-        }
-        .timeline-left {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-        .timeline-icon {
-          width: 36px;
-          height: 36px;
-          border-radius: 50%;
-          background: var(--mobile-surface);
-          border: 1px solid var(--mobile-border);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: var(--mobile-text-dim);
-          z-index: 1;
-        }
-        .timeline-item.completed .timeline-icon {
-          background: rgba(16, 185, 129, 0.1);
-          color: #10b981;
-          border-color: #10b981;
-        }
-        .timeline-item.active .timeline-icon {
-          background: var(--mobile-accent);
-          color: #fff;
-          border-color: var(--mobile-accent);
-          box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
-        }
-        .timeline-line {
-          flex: 1;
-          width: 2px;
-          background: var(--mobile-border);
-          margin: 4px 0;
-        }
-        .timeline-item.completed .timeline-line {
-          background: #10b981;
-        }
-        .timeline-content {
-          padding-top: 6px;
-        }
-        .step-status {
-          font-size: 1rem;
-          font-weight: 700;
-          margin: 0;
-        }
-        .step-date {
-          font-size: 0.85rem;
-          color: var(--mobile-text-dim);
-          margin: 4px 0 0;
-        }
-        .timeline-item.active .step-status {
-          color: var(--mobile-accent);
-        }
-        .tracking-section {
-          margin-bottom: 32px;
-        }
-        .section-title {
-          font-size: 1.1rem;
-          font-weight: 700;
-          margin-bottom: 16px;
-        }
-        .address-box {
-          display: flex;
-          gap: 16px;
-          background: var(--mobile-surface);
-          padding: 16px;
-          border-radius: 20px;
-          border: 1px solid var(--mobile-border);
-        }
-        .box-icon {
-          font-size: 1.4rem;
-          color: var(--mobile-accent);
-        }
-        .box-info .name {
-          display: block;
-          font-weight: 700;
-          margin-bottom: 4px;
-        }
-        .box-info .address {
-          font-size: 0.85rem;
-          color: var(--mobile-text-dim);
-          margin: 0;
-          line-height: 1.4;
-        }
-        .help-buttons {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-        .btn-help {
-          width: 100%;
-          background: #fff;
-          color: #000;
-          border: none;
-          padding: 16px;
-          border-radius: 16px;
-          font-weight: 700;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 10px;
-        }
-        .btn-help.secondary {
-          background: var(--mobile-surface);
-          color: #fff;
-          border: 1px solid var(--mobile-border);
-        }
-      `}} />
+        {/* Action */}
+        <button 
+          onClick={() => { triggerHaptic('medium'); navigate('/contact'); }}
+          className="w-full h-16 border border-white/10 rounded-[24px] text-white font-bold uppercase tracking-widest text-[11px] flex items-center justify-center gap-3 active:scale-95 transition-transform"
+        >
+          <Icon name="headset_mic" /> Support Concierge
+        </button>
+      </main>
     </div>
   );
 };

@@ -1,103 +1,214 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TopAppBar, Icon } from '../components/MobileUI';
+import { TopAppBar, Icon, triggerHaptic } from '../components/MobileUI';
 import { useCart } from '../../context/CartContext';
+import { authAPI, orderAPI, paymentAPI } from '../../services/api';
+import toast from 'react-hot-toast';
+
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    if (window.Razorpay) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
 
 const MobileCheckoutPage = () => {
   const navigate = useNavigate();
-  const { cart, cartTotal } = useCart();
+  const { cart, cartTotal, clearCart } = useCart();
+  const [addresses, setAddresses] = useState([]);
+  const [selectedAddressId, setSelectedAddressId] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [placingOrder, setPlacingOrder] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('cod');
+
+  useEffect(() => {
+    const fetchInitial = async () => {
+      try {
+        const res = await authAPI.getAddresses();
+        setAddresses(res.data);
+        const def = res.data.find(a => a.isDefault) || res.data[0];
+        if (def) setSelectedAddressId(def._id);
+      } catch (err) {
+        console.error('Failed to load addresses', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInitial();
+  }, []);
+
+  const handlePlaceOrder = async () => {
+    const address = addresses.find(a => a._id === selectedAddressId);
+    if (!address) {
+      toast.error('Please select a shipping address');
+      return;
+    }
+
+    setPlacingOrder(true);
+    try {
+      const orderRes = await orderAPI.createOrder({
+        shippingAddress: address,
+        billingAddress: address,
+        paymentMethod
+      });
+
+      const order = orderRes.data;
+
+      if (paymentMethod === 'razorpay') {
+        const payRes = await paymentAPI.initiate({ orderId: order._id });
+        const loaded = await loadRazorpayScript();
+        
+        if (!loaded) {
+          toast.error('Payment gateway failed to load');
+          return;
+        }
+
+        const options = {
+          key: payRes.data.key_id,
+          amount: payRes.data.amount,
+          currency: payRes.data.currency,
+          order_id: payRes.data.orderId,
+          name: 'Caryqel',
+          description: `Order #${order.orderNumber}`,
+          handler: async (response) => {
+            await paymentAPI.verify(response);
+            await clearCart();
+            toast.success('Order confirmed');
+            navigate(`/orders/${order._id}`);
+          },
+          prefill: {
+            name: address.fullName,
+            contact: address.phone
+          },
+          theme: { color: '#a855f7' }
+        };
+
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+      } else {
+        await clearCart();
+        toast.success('Order placed successfully');
+        navigate(`/orders/${order._id}`);
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Order failed');
+    } finally {
+      setPlacingOrder(false);
+    }
+  };
+
+  if (loading) return <div className="mobile-page flex items-center justify-center py-20 text-white/20 bg-[#080808]">Preparing ritual...</div>;
 
   return (
-    <div className="mobile-page pb-32 bg-background">
-      <TopAppBar title="Checkout" />
+    <div className="mobile-page pb-32 bg-[#080808]">
+      <TopAppBar title="Secure Checkout" showBack={true} />
       
-      <main className="mobile-content pt-8">
-        <nav className="flex justify-between items-center mb-12 relative px-2">
-          <div style={{ position: 'absolute', top: '50%', left: 0, width: '100%', height: '1px', background: 'rgba(255,255,255,0.1)', zIndex: -1 }}></div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 rounded-full brand-gradient flex items-center justify-center text-white ring-4 ring-black">
-              <Icon name="check" style={{ fontSize: '14px' }} />
-            </div>
-            <span className="card-label text-white">Shipping</span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 rounded-full brand-gradient flex items-center justify-center text-white ring-4 ring-black">
-              <Icon name="payments" style={{ fontSize: '14px' }} />
-            </div>
-            <span className="card-label text-white">Payment</span>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-8 h-8 rounded-full glass-panel flex items-center justify-center text-white/40 ring-4 ring-black">
-              <Icon name="visibility" style={{ fontSize: '14px' }} />
-            </div>
-            <span className="card-label text-white/40">Review</span>
-          </div>
-        </nav>
+      <main className="mobile-content px-6 pt-8">
+        {/* Progress */}
+        <div className="flex gap-4 mb-10">
+          <div className="flex-1 h-1 rounded-full bg-primary"></div>
+          <div className="flex-1 h-1 rounded-full bg-primary"></div>
+          <div className="flex-1 h-1 rounded-full bg-white/10"></div>
+        </div>
 
-        <section style={{ marginBottom: '48px' }}>
-          <h2 className="hero-title" style={{ fontSize: '24px', fontStyle: 'normal', color: '#fff', marginBottom: '24px' }}>The Bag</h2>
+        {/* Address Selection */}
+        <section className="mb-12">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="section-title-serif" style={{ fontSize: '22px', marginBottom: 0 }}>Shipping</h2>
+            <button onClick={() => navigate('/profile/addresses')} className="text-primary text-[10px] font-bold uppercase tracking-widest">Manage</button>
+          </div>
+          
           <div className="space-y-4">
-            {cart.items.map((item) => (
-              <div key={item.product._id} className="glass-panel p-4 rounded-xl flex gap-4">
-                <div className="w-24 h-32 rounded-lg overflow-hidden flex-shrink-0">
-                  <img className="w-full h-full object-cover" src={item.product.images[0]} alt={item.product.name}/>
+            {addresses.map(addr => (
+              <div 
+                key={addr._id} 
+                onClick={() => setSelectedAddressId(addr._id)}
+                className={`p-6 rounded-[24px] border transition-all duration-300 ${selectedAddressId === addr._id ? 'border-primary bg-primary/5' : 'border-white/5 bg-[#111]'}`}
+              >
+                <div className="flex justify-between mb-2">
+                  <span className="text-white font-medium">{addr.type || 'Home'}</span>
+                  {selectedAddressId === addr._id && <Icon name="check_circle" style={{ color: 'var(--primary)', fontSize: '20px' }} />}
                 </div>
-                <div className="flex flex-col justify-between py-1 flex-grow">
-                  <div>
-                    <h3 className="card-title" style={{ fontSize: '18px' }}>{item.product.name}</h3>
-                    <p className="card-label mt-1">{item.product.brand || 'Onyx / Violet'}</p>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="card-price">₹{item.product.price.toLocaleString()}</span>
-                    <div className="flex items-center gap-4 bg-white/5 rounded-full px-3 py-1 border border-white/10">
-                      <Icon name="remove" style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)' }} />
-                      <span className="card-label text-white">{item.quantity}</span>
-                      <Icon name="add" style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)' }} />
-                    </div>
-                  </div>
-                </div>
+                <p className="text-white/40 text-sm">{addr.street}, {addr.city}</p>
               </div>
             ))}
           </div>
         </section>
 
-        <section style={{ marginBottom: '48px' }}>
-          <h2 className="hero-title" style={{ fontSize: '24px', fontStyle: 'normal', color: '#fff', marginBottom: '24px' }}>Payment Method</h2>
-          <form className="space-y-6">
-            <div className="space-y-1">
-              <label className="card-label text-white/60 ml-1">Cardholder Name</label>
-              <input className="w-full h-14 bg-surface-container-low border border-white/10 rounded-xl px-4 text-white focus:outline-none focus:border-primary/40 transition-all uppercase tracking-widest" placeholder="ALEXANDER VANCE" type="text"/>
-            </div>
-            <div className="space-y-1">
-              <label className="card-label text-white/60 ml-1">Card Number</label>
-              <div className="relative" style={{ position: 'relative' }}>
-                <input className="w-full h-14 bg-surface-container-low border border-white/10 rounded-xl px-4 pr-12 text-white focus:outline-none focus:border-primary/40 transition-all tracking-[0.2em]" placeholder="0000 0000 0000 0000" type="text"/>
-                <Icon name="credit_card" style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', opacity: 0.4 }} />
+        {/* Order Review (Mini) */}
+        <section className="mb-12">
+          <h2 className="section-title-serif" style={{ fontSize: '22px', marginBottom: '24px' }}>Review Order</h2>
+          <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+            {cart.items.map((item) => (
+              <div key={item.product._id} className="min-w-[100px]">
+                <div className="w-24 h-24 rounded-2xl overflow-hidden bg-[#111] mb-2">
+                  <img src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-cover" />
+                </div>
+                <p className="text-[9px] text-white/40 uppercase tracking-widest truncate">{item.product.name}</p>
+                <p className="text-white text-[10px] font-bold">Qty: {item.quantity}</p>
               </div>
-            </div>
-          </form>
+            ))}
+          </div>
         </section>
 
-        <section className="glass-panel p-6 rounded-2xl" style={{ marginBottom: '48px' }}>
-          <div className="space-y-3 mb-6">
-            <div className="flex justify-between items-center">
-              <span style={{ color: 'rgba(255,255,255,0.6)' }}>Subtotal</span>
-              <span style={{ color: '#fff' }}>₹{cartTotal.toLocaleString()}</span>
+        {/* Payment Methods */}
+        <section className="mb-12">
+          <h2 className="section-title-serif" style={{ fontSize: '22px', marginBottom: '24px' }}>Payment</h2>
+          <div className="grid grid-cols-2 gap-4">
+            <button 
+              onClick={() => { triggerHaptic('light'); setPaymentMethod('cod'); }}
+              className={`p-6 rounded-[24px] border flex flex-col items-center gap-3 transition-all ${paymentMethod === 'cod' ? 'border-primary bg-primary/5' : 'border-white/5 bg-[#111]'}`}
+            >
+              <Icon name="payments" style={{ color: paymentMethod === 'cod' ? '#fff' : 'rgba(255,255,255,0.2)' }} />
+              <span className={`text-[11px] font-bold uppercase tracking-widest ${paymentMethod === 'cod' ? 'text-white' : 'text-white/20'}`}>COD</span>
+            </button>
+            <button 
+              onClick={() => { triggerHaptic('light'); setPaymentMethod('razorpay'); }}
+              className={`p-6 rounded-[24px] border flex flex-col items-center gap-3 transition-all ${paymentMethod === 'razorpay' ? 'border-primary bg-primary/5' : 'border-white/5 bg-[#111]'}`}
+            >
+              <Icon name="credit_card" style={{ color: paymentMethod === 'razorpay' ? '#fff' : 'rgba(255,255,255,0.2)' }} />
+              <span className={`text-[11px] font-bold uppercase tracking-widest ${paymentMethod === 'razorpay' ? 'text-white' : 'text-white/20'}`}>Razorpay</span>
+            </button>
+          </div>
+        </section>
+
+        <div className="flex items-center justify-center gap-2 mb-12 opacity-30">
+          <Icon name="lock" style={{ fontSize: '14px' }} />
+          <span className="text-[10px] uppercase tracking-widest font-bold">Secure Encrypted Transaction</span>
+        </div>
+
+        {/* Total Summary */}
+        <section className="p-8 rounded-[32px] bg-[#111] border border-white/5 mb-10">
+          <div className="space-y-4 mb-8">
+            <div className="flex justify-between">
+              <span className="text-white/40 text-sm">Amount</span>
+              <span className="text-white">₹{cartTotal.toLocaleString()}</span>
             </div>
-            <div className="flex justify-between items-center">
-              <span style={{ color: 'rgba(255,255,255,0.6)' }}>Shipping</span>
-              <span className="card-label text-primary">COMPLIMENTARY</span>
-            </div>
-            <div className="pt-3 border-t border-white/10 flex justify-between items-center">
-              <span className="hero-title" style={{ fontSize: '24px', fontStyle: 'normal', color: '#fff' }}>Total</span>
-              <span className="hero-title" style={{ fontSize: '24px', fontStyle: 'normal', color: '#fff' }}>₹{cartTotal.toLocaleString()}</span>
+            <div className="flex justify-between">
+              <span className="text-white/40 text-sm">Shipping</span>
+              <span className="text-primary text-[10px] font-bold uppercase tracking-widest">Free</span>
             </div>
           </div>
-          <button onClick={() => navigate('/')} className="w-full h-16 brand-gradient rounded-xl font-bold text-white flex items-center justify-center gap-3 shadow-lg shadow-violet-500/20 active:scale-[0.98] transition-transform">
-            Complete Purchase
-            <Icon name="lock" />
-          </button>
+          <div className="pt-6 border-t border-white/5 flex justify-between items-center">
+            <span className="text-white text-2xl font-serif">Total</span>
+            <span className="text-white text-2xl font-serif">₹{cartTotal.toLocaleString()}</span>
+          </div>
         </section>
+
+        <button 
+          onClick={handlePlaceOrder}
+          disabled={placingOrder}
+          className="w-full h-16 bg-white text-black rounded-[24px] font-bold uppercase tracking-widest text-[13px] shadow-2xl flex items-center justify-center gap-3"
+        >
+          {placingOrder ? 'Processing...' : 'Place Order'}
+        </button>
       </main>
     </div>
   );

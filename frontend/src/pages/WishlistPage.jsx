@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { FiShoppingBag, FiTrash2, FiArrowLeft } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 import EmptyState from '../components/common/EmptyState';
 import { ErrorState, PageLoader } from '../components/common/PageState';
 import { useCart } from '../context/CartContext';
@@ -12,6 +14,7 @@ const WishlistPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const { fetchCart } = useCart();
+  const navigate = useNavigate();
 
   const loadWishlist = async () => {
     setLoading(true);
@@ -82,9 +85,14 @@ const WishlistPage = () => {
   return (
     <div className="page wishlist-page">
       <div className="page-hero compact">
+        <div className="hero-top-nav" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+          <button type="button" onClick={() => navigate(-1)} className="back-btn-pill" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', width: '42px', height: '42px', display: 'grid', placeItems: 'center', color: '#fff', cursor: 'pointer' }}>
+            <FiArrowLeft size={20} />
+          </button>
+        </div>
         <span className="page-state-badge">Wishlist</span>
-        <h1>Your saved product shortlist</h1>
-        <p>Keep high-intent products in one place, then move them into your cart when you are ready.</p>
+        <h1>The Saved Pieces</h1>
+        <p>Curated selections waiting for their moment in your closet.</p>
       </div>
 
       <div className="stack-list">
@@ -94,16 +102,22 @@ const WishlistPage = () => {
           if (!product) return null;
 
           return (
-            <article key={item._id} className="surface-card wishlist-row">
+            <article key={item._id} className="wishlist-row">
               <img src={product.images?.[0] || 'https://via.placeholder.com/120'} alt={product.name} />
               <div className="wishlist-row-copy">
                 <p>{product.brand || 'Caryqel'}</p>
                 <h2>{product.name}</h2>
-                <span>{formatCurrency(product.price)}</span>
-              </div>
-              <div className="row-actions">
-                <button type="button" className="btn-primary" onClick={() => handleMoveToCart(product._id)}>Move to cart</button>
-                <button type="button" className="btn-secondary" onClick={() => handleRemove(product._id)}>Remove</button>
+                <div className="wishlist-row-footer">
+                  <span className="wishlist-row-price">{formatCurrency(product.price)}</span>
+                  <div className="wishlist-row-actions">
+                    <button type="button" className="action-pill primary" onClick={() => handleMoveToCart(product._id)}>
+                      <FiShoppingBag /> Add
+                    </button>
+                    <button type="button" className="action-pill secondary" onClick={() => handleRemove(product._id)} aria-label="Remove item">
+                      <FiTrash2 />
+                    </button>
+                  </div>
+                </div>
               </div>
             </article>
           );

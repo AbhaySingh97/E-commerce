@@ -1,52 +1,56 @@
-import React from 'react';
-import { TopAppBar, Icon } from '../components/MobileUI';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { TopAppBar } from '../components/MobileUI';
+import { productAPI } from '../../services/api';
 
 const MobileCategoriesPage = () => {
   const navigate = useNavigate();
-  
-  const categories = [
-    { name: 'Electronics', count: 42, icon: '⚡', color: '#10b981' },
-    { name: 'Fashion', count: 128, icon: '👗', color: '#8b5cf6' },
-    { name: 'Home Decor', count: 64, icon: '🏠', color: '#f59e0b' },
-    { name: 'Accessories', count: 89, icon: '🎒', color: '#ef4444' },
-    { name: 'Limited', count: 12, icon: '💎', color: '#3b82f6' }
-  ];
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await productAPI.getCategories();
+        setCategories(res.data);
+      } catch (err) {
+        console.error('Failed to fetch categories', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   return (
-    <div className="mobile-page pb-32">
-      <TopAppBar title="Categories" showBack={false} />
+    <div className="mobile-page pb-32 animate-fade-in">
+      <TopAppBar title="Collections" showBack={true} />
       
-      <main className="mobile-content pt-8">
+      <main className="px-6 pt-8">
         <div className="mobile-section-header">
-          <h2 className="hero-title" style={{ fontSize: '24px', fontStyle: 'normal' }}>Collections</h2>
-          <span className="card-label" style={{ opacity: 0.5 }}>{categories.length} Departments</span>
+          <h2 className="hero-title" style={{ fontSize: '24px', fontStyle: 'normal' }}>Departments</h2>
+          <span className="card-label" style={{ opacity: 0.4 }}>{categories.length} Collections</span>
         </div>
 
-        <div className="category-list" style={{ marginTop: '24px' }}>
-          {categories.map((cat) => (
-            <div 
-              key={cat.name} 
-              className="category-row-card glass-panel" 
-              onClick={() => navigate('/products')}
-              style={{ 
-                '--cat-color': cat.color, 
-                padding: '20px', 
-                borderRadius: '16px',
-                marginBottom: '12px'
-              }}
-            >
-              <div className="cat-icon" style={{ fontSize: '24px' }}>{cat.icon}</div>
-              <div className="cat-info" style={{ marginLeft: '16px' }}>
-                <h3 className="font-body-lg" style={{ color: '#fff', margin: 0 }}>{cat.name}</h3>
-                <span className="card-label" style={{ fontSize: '10px' }}>{cat.count} Objects</span>
+        {loading ? (
+          <div className="py-20 text-center opacity-30">Loading Departments...</div>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 mt-6">
+            {categories.map((cat) => (
+              <div 
+                key={cat._id} 
+                className="relative aspect-[16/9] rounded-[32px] overflow-hidden group active:scale-95 transition-all duration-300 shadow-2xl"
+                onClick={() => navigate(`/products?category=${cat.slug}`)}
+              >
+                <img src={cat.image || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&q=80&w=800'} alt={cat.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-8">
+                  <h3 className="text-white text-2xl font-bold font-serif mb-1">{cat.name}</h3>
+                  <p className="text-white/60 text-sm tracking-widest uppercase">{cat.description || 'Curated Selection'}</p>
+                </div>
               </div>
-              <div className="cat-arrow" style={{ marginLeft: 'auto', opacity: 0.3 }}>
-                <Icon name="chevron_right" />
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </main>
     </div>
   );

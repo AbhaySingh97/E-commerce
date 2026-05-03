@@ -20,10 +20,14 @@ if (!process.env.JWT_SECRET) {
   throw new Error('JWT_SECRET is required');
 }
 
-const allowedOrigins = (process.env.CORS_ORIGIN || '')
-  .split(',')
-  .map((origin) => origin.trim())
-  .filter(Boolean);
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  ...(process.env.CORS_ORIGIN || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean)
+];
 
 const allowedOriginRegexes = (process.env.CORS_ORIGIN_REGEX || '')
   .split(',')

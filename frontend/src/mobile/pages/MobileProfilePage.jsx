@@ -1,86 +1,130 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TopAppBar, Icon } from '../components/MobileUI';
+import { Icon, triggerHaptic } from '../components/MobileUI';
 import { useAuth } from '../../context/AuthContext';
+import { orderAPI, wishlistAPI } from '../../services/api';
 
 const MobileProfilePage = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [stats, setStats] = useState({ orders: 0, wishlist: 0, coupons: 0 });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const [ordersRes, wishlistRes] = await Promise.all([
+          orderAPI.getOrders(),
+          wishlistAPI.getWishlist()
+        ]);
+        
+        setStats({
+          orders: ordersRes.data.totalCount || ordersRes.data.orders?.length || 0,
+          wishlist: wishlistRes.data.items?.length || 0,
+          coupons: 4 // Assuming coupons are still static or hardcoded in backend for now
+        });
+      } catch (err) {
+        console.error('Failed to fetch profile stats', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchUserData();
+    }
+  }, [user]);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  const menuItems = [
+    { label: 'Personal Info', icon: 'person', path: '/profile/edit' },
+    { label: 'Order History', icon: 'history', path: '/orders' },
+    { label: 'Address Book', icon: 'location_on', path: '/profile/addresses' },
+    { label: 'Logout', icon: 'logout', action: handleLogout, isLogout: true },
+  ];
 
   return (
-    <div className="mobile-page pb-32 bg-background min-h-screen">
-      <TopAppBar showBack={true} />
+    <div className="mobile-page pb-32 bg-[#080808]">
+      <header className="checkout-header-v3">
+        <button onClick={() => navigate(-1)}>
+          <Icon name="arrow_back" style={{ color: '#a855f7', fontSize: '24px' }} />
+        </button>
+        <h1>Caryqel</h1>
+        <Icon name="shopping_bag" style={{ color: '#a855f7', fontSize: '24px' }} onClick={() => navigate('/cart')} />
+      </header>
       
-      <main className="mobile-content py-8">
-        <section className="flex flex-col items-center mb-section-gap">
-          <div className="relative mb-4" style={{ position: 'relative' }}>
-            <div className="w-24 h-24 rounded-full border border-primary-container p-1">
-              <img 
-                alt="Profile" 
-                className="w-full h-full object-cover rounded-full" 
-                src={user?.avatar || "https://lh3.googleusercontent.com/aida-public/AB6AXuBy7mFAYL5dhJUndGjbTRQ1Y8gQn9GgtJHWpUg7T0l9uMbmqfmoiR_ltjG7f1jVHs_IOucZSiWZAlDzRtvhYt57hqjcuKh__f9BQrBCG3zSW4WgCnitxL7whTmsmq-aSBnayGv-0trlc0y6hsahOfH5N0WEgLorwwvt0OYSH4RwfD4w4hOeWKXXxT0vXlzHTe-02i_9TKcL68LlbVDDxi-FWpONGKaG8pAMP5hn66EvaRPnhHat9WdH1OyHKvWgtweyBygYTRVYkfSA"}
-              />
-            </div>
-            <div 
-              className="absolute bottom-0 right-0 brand-gradient w-6 h-6 rounded-full flex items-center justify-center border-2 border-surface shadow-lg"
-              style={{ position: 'absolute', bottom: 0, right: 0 }}
-            >
-              <Icon name="verified" style={{ fontSize: '12px', color: '#fff' }} />
+      <main className="mobile-content">
+        <section className="profile-container">
+          <div className="avatar-wrapper-v3">
+            <div className="avatar-ring-v3"></div>
+            <img 
+              src={user?.avatar || user?.image || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200'} 
+              alt="Profile" 
+              className="avatar-img-v3" 
+            />
+            <div className="verified-badge-v3">
+              <Icon name="check" style={{ fontSize: '14px' }} />
             </div>
           </div>
-          <div className="text-center">
-            <h2 className="hero-title" style={{ fontSize: '24px', fontStyle: 'normal', color: '#fff' }}>{user?.name || 'Alex Sterling'}</h2>
-            <div className="inline-flex px-3 py-1 rounded-full glass-panel mt-2 border-primary/20">
-              <span className="card-label" style={{ color: 'var(--primary)', fontSize: '10px' }}>Platinum Member</span>
-            </div>
-          </div>
-        </section>
 
-        <section className="profile-stats mb-section-gap">
-          <div className="glass-card stat-item">
-            <span className="stat-num">12</span>
-            <span className="card-label" style={{ fontSize: '10px' }}>Orders</span>
-          </div>
-          <div className="glass-card stat-item">
-            <span className="stat-num">24</span>
-            <span className="card-label" style={{ fontSize: '10px' }}>Wishlist</span>
-          </div>
-          <div className="glass-card stat-item">
-            <span className="stat-num">04</span>
-            <span className="card-label" style={{ fontSize: '10px' }}>Coupons</span>
-          </div>
-        </section>
+          <h2 className="profile-name-serif">{user?.name || 'Guest User'}</h2>
+          <div className="platinum-pill-v3">{user?.role === 'admin' ? 'Elite Admin' : 'Platinum Member'}</div>
 
-        <section className="menu-list" style={{ marginTop: '48px' }}>
-          {[
-            { icon: 'person', label: 'Personal Info', path: '/profile' },
-            { icon: 'history', label: 'Order History', path: '/orders' },
-            { icon: 'location_on', label: 'Address Book', path: '/profile' },
-            { icon: 'logout', label: 'Logout', error: true, action: logout },
-          ].map((item, idx) => (
-            <div 
-              key={idx} 
-              className="menu-row" 
-              onClick={() => item.action ? item.action() : navigate(item.path)}
-              style={{ cursor: 'pointer' }}
-            >
-              <div className="menu-row-left">
-                <Icon name={item.icon} className={item.error ? 'text-error' : 'menu-icon'} style={{ color: item.error ? '#ffb4ab' : 'rgba(255,255,255,0.4)' }} />
-                <span className="menu-text" style={{ color: item.error ? '#ffb4ab' : 'rgba(255,255,255,0.8)' }}>{item.label}</span>
-              </div>
-              <Icon name="chevron_right" style={{ color: 'rgba(255,255,255,0.2)' }} />
+          <div className="profile-stats-v3">
+            <div className="stat-box-v3" onClick={() => navigate('/orders')}>
+              <span className="val">{loading ? '...' : stats.orders}</span>
+              <span className="lbl">Orders</span>
             </div>
-          ))}
-        </section>
-
-        <section className="mt-12 glass-card rounded-[20px] p-6 relative overflow-hidden" style={{ position: 'relative', overflow: 'hidden', marginTop: '48px' }}>
-          <div className="relative z-10" style={{ position: 'relative', zIndex: 10 }}>
-            <span className="card-label text-primary text-[10px] mb-2 block" style={{ color: 'var(--primary)' }}>Special Access</span>
-            <h3 className="hero-title" style={{ fontSize: '24px', fontStyle: 'normal', color: '#fff', marginBottom: '16px' }}>Winter '24 <br/>Privé Preview</h3>
-            <button className="px-6 py-3 rounded-full bg-white text-black card-label text-[11px] hover:opacity-90 transition-opacity border-none">Request Invite</button>
+            <div className="stat-box-v3" onClick={() => navigate('/wishlist')}>
+              <span className="val">{loading ? '...' : stats.wishlist}</span>
+              <span className="lbl">Wishlist</span>
+            </div>
+            <div className="stat-box-v3">
+              <span className="val">{loading ? '...' : stats.coupons}</span>
+              <span className="lbl">Coupons</span>
+            </div>
           </div>
-          <div className="absolute -right-4 -bottom-4 w-32 h-32 opacity-20" style={{ position: 'absolute', right: '-16px', bottom: '-16px' }}>
-            <Icon name="diamond" style={{ fontSize: '120px', color: 'rgba(255,255,255,0.5)' }} />
+
+          <div className="w-full px-6 mb-12">
+            <div className="flex justify-between items-end mb-4">
+              <span className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Elite Progress</span>
+              <span className="text-primary text-[10px] font-bold">75% to Diamond</span>
+            </div>
+            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+              <div className="h-full bg-primary rounded-full shadow-[0_0_10px_rgba(168,85,247,0.5)]" style={{ width: '75%' }}></div>
+            </div>
+          </div>
+
+          <div className="profile-menu-v3">
+            {menuItems.map((item, index) => (
+              <button 
+                key={index} 
+                className={`menu-item-v3 ${item.isLogout ? 'logout' : ''}`}
+                onClick={() => { triggerHaptic('light'); item.action ? item.action() : navigate(item.path); }}
+              >
+                <div className="left">
+                  <Icon name={item.icon} style={{ color: item.isLogout ? '#ff5f5f' : '#a855f7' }} />
+                  <span>{item.label}</span>
+                </div>
+                <Icon name="chevron_right" className="icon-arrow" />
+              </button>
+            ))}
+          </div>
+
+          <div className="special-access-card active:scale-[0.98] transition-transform" onClick={() => triggerHaptic('medium')}>
+            <div className="diamond-watermark">
+              <Icon name="diamond" />
+            </div>
+            <span className="special-label">Exclusive Benefit</span>
+            <h3 className="special-title">
+              Personalized <br /> 
+              Style Consultation
+            </h3>
+            <button className="request-btn">Book Now</button>
           </div>
         </section>
       </main>

@@ -1,198 +1,94 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiPackage, FiChevronRight, FiClock } from 'react-icons/fi';
-import { TopAppBar } from '../components/MobileUI';
+import { TopAppBar, Icon } from '../components/MobileUI';
+import { orderAPI } from '../../services/api';
+import toast from 'react-hot-toast';
 
 const MobileOrdersPage = () => {
   const navigate = useNavigate();
-  const [filter, setFilter] = useState('All');
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState('All');
 
-  const orders = [
-    { id: 'ORD-12345', date: '24 May, 2026', status: 'In Transit', total: 12499, items: 2, image: 'https://images.unsplash.com/photo-1496345875659-11f7dd282d1d?auto=format&fit=crop&q=80&w=200' },
-    { id: 'ORD-12344', date: '18 May, 2026', status: 'Delivered', total: 5999, items: 1, image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=200' },
-    { id: 'ORD-12340', date: '10 May, 2026', status: 'Delivered', total: 2499, items: 1, image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=200' },
-  ];
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setLoading(true);
+        const res = await orderAPI.getOrders();
+        setOrders(res.data.orders || res.data || []);
+      } catch (err) {
+        console.error('Failed to fetch orders', err);
+        toast.error('Could not load your history');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOrders();
+  }, []);
+
+  const filteredOrders = activeFilter === 'All' 
+    ? orders 
+    : orders.filter(o => o.status === activeFilter);
 
   return (
-    <div className="mobile-page">
-      <TopAppBar title="My Orders" />
+    <div className="mobile-page pb-32 bg-[#080808]">
+      <TopAppBar title="Order History" showBack={true} />
       
-      <div className="mobile-page-content">
-        <div className="order-filters">
-          {['All', 'Ongoing', 'Delivered', 'Cancelled'].map((f) => (
+      <main className="mobile-content px-6 pt-8">
+        <div className="flex gap-3 overflow-x-auto pb-6 scrollbar-hide">
+          {['All', 'Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].map(f => (
             <button 
-              key={f} 
-              className={`filter-chip ${filter === f ? 'active' : ''}`}
-              onClick={() => setFilter(f)}
+              key={f}
+              onClick={() => setActiveFilter(f)}
+              className={`px-6 py-2 rounded-full text-[11px] font-bold uppercase tracking-widest border transition-all ${activeFilter === f ? 'bg-white text-black border-white' : 'bg-transparent text-white/30 border-white/5'}`}
             >
               {f}
             </button>
           ))}
         </div>
 
-        <div className="orders-list">
-          {orders.map((order) => (
-            <div key={order.id} className="order-card" onClick={() => navigate(`/order-tracking/${order.id}`)}>
-              <div className="order-card-header">
-                <div className="id-group">
-                  <FiPackage className="id-icon" />
-                  <span className="order-id">{order.id}</span>
+        {loading ? (
+          <div className="py-20 text-center text-white/20">Retrieving archives...</div>
+        ) : filteredOrders.length > 0 ? (
+          <div className="space-y-6">
+            {filteredOrders.map((order) => (
+              <div 
+                key={order._id} 
+                className="p-6 rounded-[24px] bg-[#111] border border-white/5"
+                onClick={() => navigate(`/orders/${order._id}`)}
+              >
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-[11px] font-bold text-white/40 uppercase tracking-widest">#{order.orderNumber || order._id.slice(-8)}</span>
+                  <span className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest ${order.status === 'Delivered' ? 'bg-green-500/10 text-green-500' : 'bg-primary/10 text-primary'}`}>
+                    {order.status}
+                  </span>
                 </div>
-                <span className={`status-badge ${order.status.toLowerCase().replace(' ', '-')}`}>
-                  {order.status}
-                </span>
-              </div>
-              
-              <div className="order-card-body">
-                <div className="order-thumb">
-                  <img src={order.image} alt="Order item" />
+                
+                <div className="flex gap-4 items-center">
+                  <div className="w-16 h-16 rounded-xl bg-[#1a1a1a] overflow-hidden">
+                    <img src={order.items?.[0]?.product?.images?.[0] || 'https://via.placeholder.com/100'} alt="Product" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-white text-sm font-medium mb-1">
+                      {order.items?.length || 0} {order.items?.length === 1 ? 'Item' : 'Items'}
+                    </p>
+                    <p className="text-white/40 text-[12px]">Placed on {new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-white font-serif text-lg">₹{order.totalAmount.toLocaleString()}</p>
+                    <Icon name="chevron_right" style={{ color: 'rgba(255,255,255,0.1)', fontSize: '18px' }} />
+                  </div>
                 </div>
-                <div className="order-summary">
-                  <p className="order-date">{order.date}</p>
-                  <p className="order-meta">{order.items} items • <span className="order-price">₹{order.total.toLocaleString()}</span></p>
-                </div>
-                <FiChevronRight className="arrow-icon" />
               </div>
-
-              <div className="order-card-footer">
-                <button className="btn-track">
-                  <FiClock size={16} /> Track Order
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <style dangerouslySetInnerHTML={{ __html: `
-        .order-filters {
-          display: flex;
-          gap: 10px;
-          overflow-x: auto;
-          scrollbar-width: none;
-          margin: 0 -20px 24px;
-          padding: 0 20px;
-        }
-        .order-filters::-webkit-scrollbar { display: none; }
-        .filter-chip {
-          background: var(--mobile-surface);
-          border: 1px solid var(--mobile-border);
-          color: var(--mobile-text-dim);
-          padding: 8px 18px;
-          border-radius: 100px;
-          font-size: 0.9rem;
-          font-weight: 600;
-          white-space: nowrap;
-          transition: all 0.2s ease;
-        }
-        .filter-chip.active {
-          background: #fff;
-          color: #000;
-          border-color: #fff;
-        }
-        .orders-list {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-        .order-card {
-          background: var(--mobile-surface);
-          border-radius: 24px;
-          border: 1px solid var(--mobile-border);
-          padding: 16px;
-          transition: transform 0.2s ease;
-        }
-        .order-card:active {
-          transform: scale(0.98);
-        }
-        .order-card-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 16px;
-          padding-bottom: 16px;
-          border-bottom: 1px solid var(--mobile-border);
-        }
-        .id-group {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-        .id-icon {
-          color: var(--mobile-accent);
-        }
-        .order-id {
-          font-weight: 700;
-          font-size: 0.95rem;
-        }
-        .status-badge {
-          font-size: 0.75rem;
-          font-weight: 700;
-          padding: 4px 10px;
-          border-radius: 100px;
-          text-transform: uppercase;
-          letter-spacing: 0.02em;
-        }
-        .status-badge.in-transit { background: rgba(139, 92, 246, 0.1); color: var(--mobile-accent); }
-        .status-badge.delivered { background: rgba(16, 185, 129, 0.1); color: #10b981; }
-        .status-badge.cancelled { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
-
-        .order-card-body {
-          display: flex;
-          align-items: center;
-          gap: 16px;
-        }
-        .order-thumb {
-          width: 60px;
-          height: 60px;
-          border-radius: 12px;
-          background: #111;
-          overflow: hidden;
-        }
-        .order-thumb img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-        .order-summary {
-          flex: 1;
-        }
-        .order-date {
-          font-size: 0.85rem;
-          color: var(--mobile-text-dim);
-          margin: 0 0 4px;
-        }
-        .order-meta {
-          font-size: 0.9rem;
-          font-weight: 600;
-          margin: 0;
-        }
-        .order-price {
-          color: #fff;
-        }
-        .arrow-icon {
-          color: var(--mobile-text-dim);
-        }
-        .order-card-footer {
-          margin-top: 16px;
-          padding-top: 16px;
-          border-top: 1px solid var(--mobile-border);
-        }
-        .btn-track {
-          width: 100%;
-          background: transparent;
-          color: #fff;
-          border: 1px solid var(--mobile-border);
-          padding: 10px;
-          border-radius: 12px;
-          font-size: 0.85rem;
-          font-weight: 600;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-        }
-      `}} />
+            ))}
+          </div>
+        ) : (
+          <div className="py-20 text-center">
+            <Icon name="history" style={{ fontSize: '48px', opacity: 0.1, marginBottom: '24px' }} />
+            <p className="card-label opacity-40">No records found</p>
+          </div>
+        )}
+      </main>
     </div>
   );
 };

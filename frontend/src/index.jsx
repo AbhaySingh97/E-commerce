@@ -5,6 +5,7 @@ import { Toaster } from 'react-hot-toast';
 import App from './App';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { ProductProvider } from './context/ProductContext';
 import './index.css';
 import './styles/shell.css';
 import './styles/commerce.css';
@@ -18,10 +19,12 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <CartProvider>
-          <Toaster position="top-right" />
-          <App />
-        </CartProvider>
+        <ProductProvider>
+          <CartProvider>
+            <Toaster position="top-right" />
+            <App />
+          </CartProvider>
+        </ProductProvider>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>

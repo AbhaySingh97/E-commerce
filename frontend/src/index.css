@@ -222,10 +222,6 @@ body {
     font-size: 1.4rem;
   }
 
-  .nav-panel {
-    display: none; /* Hide standard nav panel on mobile */
-  }
-
   /* Adjust Page Padding for Mobile */
   .page {
     padding-top: 6rem;
@@ -381,6 +377,7 @@ body {
     min-height: calc(2.1rem * 1.2 * 2.5);
     max-height: none; /* Allow natural wrap if needed on very small screens */
     white-space: normal; /* Better wrap for tiny screens */
+    word-break: break-word; /* Prevent horizontal overflow */
   }
 
   .hero-actions {
@@ -761,13 +758,13 @@ body {
 }
 
 .cart-item .quantity button {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.3);
   background: rgba(255, 255, 255, 0.05);
   color: white;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;
