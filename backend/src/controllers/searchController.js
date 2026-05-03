@@ -70,10 +70,10 @@ export const autocomplete = async (req, res) => {
       status: 'active',
       name: { $regex: q, $options: 'i' }
     })
-      .select('name slug images')
+      .select('name')
       .limit(5);
     
-    res.json(products);
+    res.json(products.map(p => p.name));
   } catch (error) {
     res.status(500).json({ error: 'Failed to get suggestions' });
   }
